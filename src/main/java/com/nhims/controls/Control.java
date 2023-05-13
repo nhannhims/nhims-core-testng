@@ -104,7 +104,10 @@ public class Control extends BaseControl {
 	private void focus(WebElement element) {
 		useAction().moveToElement(element).perform();
 		if (!isFocus(element)) {
-			((JavascriptExecutor) browser()).executeScript(JavaScript.SCROLL_TO_ELEMENT, element);
+			useAction().scrollToElement(element).perform();
+			if (!isFocus(element)) {
+				((JavascriptExecutor) browser()).executeScript(JavaScript.SCROLL_TO_ELEMENT, element);
+			}
 		}
 	}
 

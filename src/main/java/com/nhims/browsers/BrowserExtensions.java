@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import org.openqa.selenium.JavascriptExecutor;
 
+import com.nhims.constants.JavaScript;
 import com.nhims.constants.TimeConst;
+import com.nhims.constants.Constants.LOCATION;
 import com.nhims.utils.Logger;
 
 public class BrowserExtensions extends Browsers {
@@ -29,7 +31,7 @@ public class BrowserExtensions extends Browsers {
 	}
 
 	private static String pageLoadingStage() {
-		return ((JavascriptExecutor) browser()).executeScript("return document.readyState;").toString();
+		return ((JavascriptExecutor) browser()).executeScript(JavaScript.PAGE_LOADING).toString();
 	}
 
 	public static void deleteAllCookies() {
@@ -63,5 +65,15 @@ public class BrowserExtensions extends Browsers {
 		ArrayList<String> tabs = getAllTabs();
 		browser().switchTo().window(tabs.get(idx));
 		Logger.Info("-----Move to Tab has index [" + idx + "]");
+	}
+
+	public static void moveTo(Object location) {
+		if (location.equals(LOCATION.TOP)) {
+			((JavascriptExecutor) browser()).executeScript(JavaScript.SCROLL_TO_TOP);
+		}
+
+		if (location.equals(LOCATION.BOTTOM)) {
+			((JavascriptExecutor) browser()).executeScript(JavaScript.SCROLL_TO_BOTTOM);
+		}
 	}
 }

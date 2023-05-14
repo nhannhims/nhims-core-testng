@@ -18,8 +18,10 @@ public class HFolder {
 	}
 
 	public static void createMoreFolder(String... folders) {
+		String path = FileConst.MAIN_PATH;
 		for (int i = 0; i < folders.length; i++) {
-			createNewFolder(FileConst.MAIN_PATH + "//" + "folders[i]");
+			path = path + "//" + folders[i];
+			createNewFolder(path);
 		}
 	}
 }

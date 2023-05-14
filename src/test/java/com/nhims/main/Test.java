@@ -8,11 +8,13 @@ import com.nhims.constants.Configs.EnvironmentConfig;
 import com.nhims.drivers.DriverController;
 import com.nhims.drivers.DriverExtensions;
 import com.nhims.utils.HFile;
+import com.nhims.utils.RecordVideo;
 
 public class Test extends BrowserExtensions {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		RecordVideo.StartRecord("TC001");
 		DriverController.instance.startChromeDriver();
 		Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
 		DriverExtensions.createNewDriver(DriverLoad.Chrome);
@@ -21,6 +23,7 @@ public class Test extends BrowserExtensions {
 		DriverExtensions.stopNewDriver();
 		DriverExtensions.switchWebDriver(DriverStatus.Current);
 		DriverController.instance.stopDriver();
+		RecordVideo.stopRecord();
 	}
 
 }

@@ -15,7 +15,7 @@ public class Checkbox extends Control {
 	}
 
 	/***
-	 * Execute check box with element input
+	 * Execute check box with get() input
 	 */
 	public void check() {
 		if (!get().isSelected()) {
@@ -25,7 +25,7 @@ public class Checkbox extends Control {
 	}
 
 	/***
-	 * Execute uncheck box with element input
+	 * Execute uncheck box with get() input
 	 */
 	public void unCheck() {
 		if (get().isSelected()) {

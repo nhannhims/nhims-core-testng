@@ -4,6 +4,8 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import com.nhims.browsers.BrowserExtensions;
+import com.nhims.browsers.Navigation;
 import com.nhims.constants.JavaScript;
 import com.nhims.constants.TimeConst;
 import com.nhims.utils.Convert;
@@ -12,27 +14,20 @@ import com.nhims.utils.Logger;
 
 public class Control extends BaseControl {
 	private String xpathOrCssSelector = null;
-	private String iframe = null;
 	private String timeout = null;
-
-	public Control() {
-		// TODO Auto-generated constructor stub
-	}
+	private WebElement wElement = null;
 
 	public Control(String xpathOrCssSelector) {
 		// TODO Auto-generated constructor stub
 		this.xpathOrCssSelector = xpathOrCssSelector;
-		if (iframe == null) {
-			browser().switchTo().defaultContent();
-			Logger.Info("-----(Switch) Default");
-		}
+		browser().switchTo().defaultContent();
+		Logger.Info("-----(Switch) Default");
 	}
 
 	public Control(String xpathOrCssSelector, String iframe, String timeout) {
 		// TODO Auto-generated constructor stub
 		this.xpathOrCssSelector = xpathOrCssSelector;
 		if (iframe != null) {
-			this.iframe = iframe;
 			browser().switchTo().frame(getElement(iframe));
 			Logger.Info("-----(Switch) IFrame");
 		}
@@ -40,9 +35,9 @@ public class Control extends BaseControl {
 	}
 
 	public Control setDynamicLocator(Object... values) {
-		Control control = new Control();
-		control.xpathOrCssSelector = HString.replace(this.xpathOrCssSelector, values);
-		return control;
+		Logger.Info("(Set Dynamic Value) >> " + xpathOrCssSelector);
+		this.xpathOrCssSelector = HString.replace(this.xpathOrCssSelector, values);
+		return this;
 	}
 
 	public String getLocator() {
@@ -50,7 +45,7 @@ public class Control extends BaseControl {
 	}
 
 	protected WebElement get() {
-		Logger.Info("-----(Find Element) Locator >> " + xpathOrCssSelector);
+		Logger.Info("(Find Element) Locator >> " + xpathOrCssSelector);
 		WebElement element = null;
 		if (timeout == null) {
 			try {
@@ -118,14 +113,17 @@ public class Control extends BaseControl {
 	 */
 	public boolean isVisible() {
 		boolean flag = false;
+		if(wElement == null) {
+			wElement = get();
+		}
 		try {
-			waitExplicit(TimeConst.SEC_NORMAL_WAIT).until(ExpectedConditions.visibilityOf(get()));
+			waitExplicit(TimeConst.SEC_NORMAL_WAIT).until(ExpectedConditions.visibilityOf(wElement));
 			flag = true;
-			Logger.Info("> is visible");
+			Logger.Info("> E > is visible");
 		} catch (Exception e) {
 			// TODO: handle exception
 			flag = false;
-			Logger.Info("> is not visible");
+			Logger.Info("> E > is not visible");
 		}
 		return flag;
 	}
@@ -139,9 +137,9 @@ public class Control extends BaseControl {
 		boolean flag = false;
 		if (countElement(xpathOrCssSelector) > 0) {
 			flag = true;
-			Logger.Info("> is display");
+			Logger.Info("> E > is display");
 		} else {
-			Logger.Info("> is not display");
+			Logger.Info("> E > is not display");
 		}
 		return flag;
 	}
@@ -153,11 +151,14 @@ public class Control extends BaseControl {
 	 */
 	public boolean isFocus() {
 		boolean flag = false;
-		if (browser().switchTo().activeElement().equals(get())) {
+		if (wElement == null) {
+			wElement = get();
+		}
+		if (browser().switchTo().activeElement().equals(wElement)) {
 			flag = true;
-			Logger.Info("> is focus");
+			Logger.Info("> E > is focus");
 		} else {
-			Logger.Info("> is not focus");
+			Logger.Info("> E > is not focus");
 		}
 		return flag;
 	}
@@ -174,16 +175,29 @@ public class Control extends BaseControl {
 	 * Execute click on the element
 	 */
 	public void click() {
+		String url = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
 		if (isVisible()) {
 			try {
-				get().click();
+				wElement.click();
 				Logger.Info("> E > Click");
+				String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
+				if (!url.equals(current)) {
+					BrowserExtensions.waitPageLoading();
+				}
 			} catch (Exception e) {
 				// TODO: handle exception
 				clickByJS();
+				String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
+				if (!url.equals(current)) {
+					BrowserExtensions.waitPageLoading();
+				}
 			}
 		} else {
 			clickByJS();
+			String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
+			if (!url.equals(current)) {
+				BrowserExtensions.waitPageLoading();
+			}
 		}
 	}
 
@@ -191,7 +205,10 @@ public class Control extends BaseControl {
 	 * Execute click on the element by use JS
 	 */
 	public void clickByJS() {
-		((JavascriptExecutor) browser()).executeScript(JavaScript.ACTION_CLICK, get());
+		if (wElement == null) {
+			wElement = get();
+		}
+		((JavascriptExecutor) browser()).executeScript(JavaScript.ACTION_CLICK, wElement);
 		Logger.Info("> E > ClickJS");
 	}
 
@@ -201,7 +218,10 @@ public class Control extends BaseControl {
 	 * @return text of the element
 	 */
 	public String getText() {
-		String text = get().getText().toString();
+		if (wElement == null) {
+			wElement = get();
+		}
+		String text = wElement.getText().toString();
 		if (text == null || text == "") {
 			text = getAttr("innerHTML");
 			if (text == null || text == "") {
@@ -220,7 +240,10 @@ public class Control extends BaseControl {
 	 * @return text of attribute of the element
 	 */
 	public String getAttr(String attr) {
-		String text = get().getAttribute(attr).toString();
+		if (wElement == null) {
+			wElement = get();
+		}
+		String text = wElement.getAttribute(attr).toString();
 		Logger.Info("> E > The Attribute [" + attr + "] [" + text + "]");
 		return text;
 	}
@@ -231,7 +254,10 @@ public class Control extends BaseControl {
 	 * @return text of value of the input element
 	 */
 	public String getValue() {
-		String text = get().getAttribute("value");
+		if (wElement == null) {
+			wElement = get();
+		}
+		String text = wElement.getAttribute("value");
 		if (text == null || text == "") {
 			text = getAttr("innerHTML");
 			if (text == null || text == "") {

@@ -1,11 +1,9 @@
 package com.nhims.utils;
 
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,7 +12,9 @@ import com.nhims.constants.Configs.ConfigFile;
 import com.nhims.constants.FileConst;
 
 public class Logger {
-	private static boolean logFlag = Convert.stringToBoolean(HFile.getConfig(ConfigFile.logger));
+	private static Writer writer;
+	private static String logName = "Log_" + HDate.formatDate("yyyyMMddhhmmss");
+	private static boolean logFlag = Convert.stringToBoolean(HFile.getConfig(ConfigFile.logger).toString());
 
 	public static void Info(String infoMessage) {
 		if (logFlag == true) {
@@ -46,17 +46,20 @@ public class Logger {
 
 	private static void writeLog(String message) {
 		HFolder.createMoreFolder("test-reports", "logs");
-		String fileName = "Log";
+		String fileName = logName;
 		String filePath = HString.replace(FileConst.LOG_FILE, fileName);
 		try {
-			Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath, true), "utf-8"));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath, true), "utf-8"));
 			addLogToFile(writer, message);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Logs file not found at " + filePath);
+		} finally {
+			try {
+				writer.close();
+			} catch (Exception ex) {
+				ex.getMessage();
+			}
 		}
 	}
 
@@ -65,14 +68,17 @@ public class Logger {
 		String fileName = logName;
 		String filePath = FileConst.MAIN_PATH + "//" + folderName + "//" + fileName + ".txt";
 		try {
-			Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath, true), "utf-8"));
+			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath, true), "utf-8"));
 			addLogToFile(writer, message);
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Logs file not found at " + filePath);
+		} finally {
+			try {
+				writer.close();
+			} catch (Exception ex) {
+				ex.getMessage();
+			}
 		}
 	}
 
@@ -86,6 +92,7 @@ public class Logger {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new RuntimeException("Cannot write text in to file");
 		}
 	}
 }

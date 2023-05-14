@@ -1,12 +1,13 @@
 package com.nhims.browsers;
 
+import com.nhims.utils.Convert;
 import com.nhims.utils.Logger;
 
 public class Navigation extends Browsers {
 	public static void visitTo(String url) {
 		BrowserExtensions.deleteAllCookies();
 		browser().navigate().to(url);
-		Logger.Info("------Open Web Appication [" + url + "]");
+		Logger.Info("-----Open Web Appication [" + url + "]");
 		BrowserExtensions.waitPageLoading();
 	}
 
@@ -29,12 +30,10 @@ public class Navigation extends Browsers {
 	}
 
 	public static String getTitle() {
-		Logger.Info("Browser get the title [" + browser().getTitle() + "]");
-		return browser().getTitle();
+		return Convert.formatStringToUTF8(browser().getTitle());
 	}
 
 	public static String getCurrentUrl() {
-		Logger.Info("Browser get the current URL [" + browser().getCurrentUrl() + "]");
-		return browser().getCurrentUrl();
+		return Convert.formatStringToUTF8(browser().getCurrentUrl());
 	}
 }

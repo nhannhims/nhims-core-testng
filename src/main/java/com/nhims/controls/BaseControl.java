@@ -30,7 +30,7 @@ public class BaseControl extends Browsers {
 		}
 		return count;
 	}
-	
+
 	protected Actions useAction() {
 		Actions action = new Actions(browser());
 		return action;

@@ -7,12 +7,13 @@ import org.openqa.selenium.JavascriptExecutor;
 import com.nhims.constants.JavaScript;
 import com.nhims.constants.TimeConst;
 import com.nhims.constants.Constants.LOCATION;
+import com.nhims.utils.Convert;
 import com.nhims.utils.Logger;
 
 public class BrowserExtensions extends Browsers {
 	public static void waitPageLoading() {
 		boolean flag = false;
-		String currentUrl = Navigation.getCurrentUrl();
+		String currentUrl = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
 		for (int i = 0; i < TimeConst.SEC_SHORT_WAIT; i++) {
 			String stage = pageLoadingStage();
 			if (stage.equals("complete")) {

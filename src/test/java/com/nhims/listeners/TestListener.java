@@ -39,6 +39,7 @@ public class TestListener implements ITestListener {
 			DriverController.instance.startChromeDriver();
 			driver = DriverController.instance.driver;
 			Logger.Info("### [START][CHROME] Load Driver");
+			Logger.Info(" ");
 		}
 	}
 
@@ -71,6 +72,7 @@ public class TestListener implements ITestListener {
 			RecordVideo.stopRecord();
 		}
 		Logger.Info("*[TEST][END][PASSED][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.Info(" ");
 	}
 
 	@Override
@@ -82,6 +84,7 @@ public class TestListener implements ITestListener {
 			RecordVideo.stopRecord();
 		}
 		Logger.Info("*[TEST][END][FAILED][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.Info(" ");
 	}
 
 	@Override

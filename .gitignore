@@ -1,8 +1,19 @@
-# Maven
-/target/
+# Maven build outputs
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.restore
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/
+mvnw
+mvnw.cmd
 
-# IDEs
+# IDEs and Editors
 # Eclipse
+.metadata
 .classpath
 .project
 .settings/
@@ -18,13 +29,24 @@ out/
 # VS Code
 .vscode/
 
-# Testing
-/test-output/
-/test-reports/
+# Testing & Reports
+test-output/
+test-reports/
+allure-results/
+allure-report/
+.allure/
+
+# Logs
+*.log
+logs/
 
 # OS-specific files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 *.tmp
 *.bak
-*.log

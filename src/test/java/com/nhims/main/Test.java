@@ -1,6 +1,5 @@
 package com.nhims.main;
 
-import com.nhims.browsers.BrowserExtensions;
 import com.nhims.browsers.Navigation;
 import com.nhims.constants.Configs.DriverLoad;
 import com.nhims.constants.Configs.DriverStatus;
@@ -10,12 +9,11 @@ import com.nhims.drivers.DriverExtensions;
 import com.nhims.utils.HFile;
 import com.nhims.utils.RecordVideo;
 
-public class Test extends BrowserExtensions {
+public class Test {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		RecordVideo.startRecord("TC001");
-		DriverController.instance.startChromeDriver();
+		DriverController.instance.startDriver();
 		Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
 		DriverExtensions.createNewDriver(DriverLoad.Chrome);
 		DriverExtensions.switchWebDriver(DriverStatus.New);

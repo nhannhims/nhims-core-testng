@@ -24,22 +24,29 @@ public class Browsers {
 		return DriverController.instance.getDriver();
 	}
 
+	/**
+	 * Pauses the current thread for the given number of seconds.
+	 * Use only for page-load polling — prefer WebDriverWait for element waits.
+	 */
 	public static void waitBySec(int sec) {
-		int time = sec * 1000;
 		try {
-			Thread.sleep(time);
+			Thread.sleep((long) sec * 1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Thread.currentThread().interrupt();
+			Logger.warning("waitBySec interrupted: " + e.getMessage());
 		}
 	}
 
+	/**
+	 * Pauses the current thread for the given number of milliseconds.
+	 * Use only for page-load polling — prefer WebDriverWait for element waits.
+	 */
 	public static void waitByMiliSec(int miliSec) {
 		try {
 			Thread.sleep(miliSec);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Thread.currentThread().interrupt();
+			Logger.warning("waitByMiliSec interrupted: " + e.getMessage());
 		}
 	}
 
@@ -58,15 +65,13 @@ public class Browsers {
 
 	public static void takeScreenshot(String scenario) {
 		HFolder.createMoreFolder("test-reports", "screenshots", screenshotFolder);
-		String path = FileConst.SCREENSHOT_FOLDER + "//" + screenshotFolder + "//" + scenario + ".png";
+		String path = Paths.get(FileConst.SCREENSHOT_FOLDER, screenshotFolder, scenario + ".png").toString();
 		TakesScreenshot scrShot = ((TakesScreenshot) browser());
 		File source = scrShot.getScreenshotAs(OutputType.FILE);
 		try {
 			Files.copy(source.toPath(), Paths.get(path));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			Logger.error("Can not screenshot");
-			e.printStackTrace();
+			Logger.error("Cannot take screenshot at: " + path + " — " + e.getMessage());
 		}
 	}
 }

@@ -19,7 +19,6 @@ public class Actions {
 	private WebElement element;
 
 	public Actions(WebElement element) {
-		// TODO Auto-generated constructor stub
 		this.element = element;
 	}
 

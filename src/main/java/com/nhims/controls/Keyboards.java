@@ -11,7 +11,6 @@ public class Keyboards {
 	private WebElement element;
 
 	public Keyboards(WebElement element) {
-		// TODO Auto-generated constructor stub
 		this.element = element;
 	}
 

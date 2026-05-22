@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!--
+  TestNG Suite Configuration for nhims-core-testng
+  - parallel="methods": each @Test method runs in its own thread (thread-safe via ThreadLocal)
+  - thread-count: number of concurrent threads (adjust based on available browsers/CPU)
+  - To run sequentially: set parallel="none"
+-->
+<suite name="NHIMS Test Suite" parallel="methods" thread-count="4" verbose="1">
+
+    <listeners>
+        <listener class-name="com.nhims.listeners.TestListener"/>
+    </listeners>
+
+    <test name="Regression Tests">
+        <classes>
+            <class name="com.nhims.scripts.TestExample"/>
+        </classes>
+    </test>
+
+</suite>

@@ -6,14 +6,13 @@ import org.testng.ITestResult;
 
 import com.nhims.browsers.Browsers;
 import com.nhims.constants.Configs.ConfigFile;
-import com.nhims.constants.Configs.DriverLoad;
 import com.nhims.drivers.DriverController;
 import com.nhims.utils.HFile;
 import com.nhims.utils.Logger;
 import com.nhims.utils.RecordVideo;
 
 public class TestListener implements ITestListener {
-	private String os = System.getProperty("os.name").toLowerCase();
+	private final String os = System.getProperty("os.name").toLowerCase();
 
 	public String getTestName(ITestResult result) {
 		return result.getTestName();
@@ -44,54 +43,46 @@ public class TestListener implements ITestListener {
 	@Override
 	public void onTestStart(ITestResult result) {
 		Logger.info("*[TEST][START][" + getMethodName(result) + "] " + getTestDescription(result));
-		if (HFile.getConfig(ConfigFile.driver).equals(DriverLoad.Chrome.toString())) {
-			DriverController.instance.startChromeDriver();
-			Logger.info("### [START][CHROME] Load Driver");
-		}
-		if (HFile.getConfig(ConfigFile.video).equals("true") && !os.contains("mac os")) {
+		// Start driver based on configs.properties (supports chrome, firefox, edge)
+		DriverController.instance.startDriver();
+		Logger.info("### [START][DRIVER] Loaded from config: " + HFile.getConfig(ConfigFile.driver));
+
+		if ("true".equalsIgnoreCase(HFile.getConfig(ConfigFile.video)) && !os.contains("mac os")) {
 			RecordVideo.startRecord(getMethodName(result));
 		}
 	}
 
 	@Override
 	public void onTestSuccess(ITestResult result) {
-		if (HFile.getConfig(ConfigFile.capture).equals("true")) {
-			Browsers.takeScreenshot(getMethodName(result));
-		}
-		if (HFile.getConfig(ConfigFile.video).equals("true") && !os.contains("mac os")) {
-			RecordVideo.stopRecord();
-		}
-		Logger.info("*[TEST][END][PASSED][" + getMethodName(result) + "] " + getTestDescription(result));
-		Logger.info(" ");
-		try {
-			DriverController.instance.stopDriver();
-			Logger.info("### [END] Stop Driver");
-		} catch (Exception e) {
-			Logger.error("Can not handle quit driver: " + e.getMessage());
-		}
+		captureAndStop(result, "PASSED");
 	}
 
 	@Override
 	public void onTestFailure(ITestResult result) {
-		if (HFile.getConfig(ConfigFile.capture).equals("true")) {
-			Browsers.takeScreenshot(getMethodName(result));
-		}
-		if (HFile.getConfig(ConfigFile.video).equals("true") && !os.contains("mac os")) {
-			RecordVideo.stopRecord();
-		}
-		Logger.info("*[TEST][END][FAILED][" + getMethodName(result) + "] " + getTestDescription(result));
-		Logger.info(" ");
-		try {
-			DriverController.instance.stopDriver();
-			Logger.info("### [END] Stop Driver");
-		} catch (Exception e) {
-			Logger.error("Can not handle quit driver: " + e.getMessage());
-		}
+		captureAndStop(result, "FAILED");
 	}
 
 	@Override
 	public void onTestSkipped(ITestResult result) {
 		Logger.info("*[TEST][END][SKIPPED][" + getMethodName(result) + "] " + getTestDescription(result));
+		stopDriverQuietly();
+	}
+
+	// ─── Private helpers ─────────────────────────────────────────────────────────
+
+	private void captureAndStop(ITestResult result, String status) {
+		if ("true".equalsIgnoreCase(HFile.getConfig(ConfigFile.capture))) {
+			Browsers.takeScreenshot(getMethodName(result));
+		}
+		if ("true".equalsIgnoreCase(HFile.getConfig(ConfigFile.video)) && !os.contains("mac os")) {
+			RecordVideo.stopRecord();
+		}
+		Logger.info("*[TEST][END][" + status + "][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.info(" ");
+		stopDriverQuietly();
+	}
+
+	private void stopDriverQuietly() {
 		try {
 			DriverController.instance.stopDriver();
 			Logger.info("### [END] Stop Driver");
@@ -100,4 +91,3 @@ public class TestListener implements ITestListener {
 		}
 	}
 }
-

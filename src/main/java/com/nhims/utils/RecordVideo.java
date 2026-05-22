@@ -27,19 +27,18 @@ import org.monte.media.math.Rational;
 import org.monte.screenrecorder.ScreenRecorder;
 
 public class RecordVideo extends ScreenRecorder {
-	private static ScreenRecorder screenRecorder;
-	private static String videoFolder = HDate.formatDate("yyyy_MM_dd_hhmmss");
-	private String name;
+	private static final ThreadLocal<ScreenRecorder> screenRecorderThread = new ThreadLocal<>();
+	private static final String videoFolder = HDate.formatDate("yyyy_MM_dd_HHmmss");
+	private final String name;
 
 	public RecordVideo(GraphicsConfiguration cfg, Rectangle captureArea, Format fileFormat, Format screenFormat,
 			Format mouseFormat, Format audioFormat, File movieFolder, String name) throws IOException, AWTException {
-		// TODO Auto-generated constructor stub
 		super(cfg, captureArea, fileFormat, screenFormat, mouseFormat, audioFormat, movieFolder);
 		this.name = name;
 	}
 
+	@Override
 	protected File createMovieFile(Format fileFormat) throws IOException {
-		// TODO Auto-generated method stub
 		if (!movieFolder.exists()) {
 			movieFolder.mkdirs();
 		} else if (!movieFolder.isDirectory()) {
@@ -57,36 +56,31 @@ public class RecordVideo extends ScreenRecorder {
 		GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration();
 		try {
-			screenRecorder = new RecordVideo(gc, captureSize,
+			ScreenRecorder recorder = new RecordVideo(gc, captureSize,
 					new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI),
 					new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE,
 							CompressorNameKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE, DepthKey, 24, FrameRateKey,
 							Rational.valueOf(15), QualityKey, 1.0f, KeyFrameIntervalKey, 15 * 60),
 					new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, "black", FrameRateKey, Rational.valueOf(30)),
 					null, file, methodName);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AWTException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			screenRecorder.start();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			Logger.error("Can not start record video");
+			screenRecorderThread.set(recorder);
+			recorder.start();
+		} catch (IOException | AWTException e) {
+			Logger.error("Can not start record video: " + e.getMessage());
 			e.printStackTrace();
 		}
-
 	}
 
 	public static void stopRecord() {
 		try {
-			screenRecorder.stop();
+			ScreenRecorder recorder = screenRecorderThread.get();
+			if (recorder != null) {
+				recorder.stop();
+				screenRecorderThread.remove();
+			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			Logger.error("Can not stop record video");
+			Logger.error("Can not stop record video: " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 }

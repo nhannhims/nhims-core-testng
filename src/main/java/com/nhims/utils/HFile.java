@@ -22,7 +22,7 @@ public class HFile {
 			try (FileInputStream fis = new FileInputStream(path)) {
 				p.load(fis);
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new RuntimeException("Could not load configuration file at: " + path, e);
 			}
 			return p;
 		});
@@ -30,16 +30,15 @@ public class HFile {
 		return val != null ? val.toString() : null;
 	}
 
-
 	public static String getConfigEnvironment(Object configName) {
 		Object environment = getConfig("environment");
-		String filePath = FileConst.ENVIRONMENT_DEFAUT_FILE;
+		String filePath = FileConst.ENVIRONMENT_DEFAULT_FILE;
 		if (environment != null) {
 			String envStr = environment.toString().trim();
 			if (envStr.equalsIgnoreCase(Configs.Environment.Production.name())) {
 				filePath = FileConst.ENVIRONMENT_PRODUCTION_FILE;
 			} else if (envStr.equalsIgnoreCase(Configs.Environment.Staging.name())) {
-				filePath = FileConst.ENVIRONMENT_DEFAUT_FILE;
+				filePath = FileConst.ENVIRONMENT_DEFAULT_FILE;
 			} else if (envStr.equalsIgnoreCase(Configs.Environment.Nightlight.name())) {
 				filePath = FileConst.ENVIRONMENT_NIGHTLIGHT_FILE;
 			}
@@ -47,4 +46,3 @@ public class HFile {
 		return getConfig(filePath, configName.toString());
 	}
 }
-

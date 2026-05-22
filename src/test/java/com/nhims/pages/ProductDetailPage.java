@@ -1,12 +1,14 @@
 package com.nhims.pages;
 
 import com.nhims.controls.Control;
-import com.nhims.utils.Logger;
 
-import junit.framework.Assert;
+import org.testng.Assert;
 
-public class ProductDetailPage {
-	private static Control btnFavourite = new Control("button.js-toggleFavorite");
+/**
+ * Page Object for the product detail page.
+ */
+public class ProductDetailPage extends BasePage {
+	private static final Control btnFavourite = new Control("button.js-toggleFavorite");
 
 	public static void clickFavouriteButton() {
 		btnFavourite.get().click();
@@ -14,7 +16,8 @@ public class ProductDetailPage {
 
 	public static void verifyFavouriteButtonChangeStatus() {
 		String actualStatus = btnFavourite.get().getAttr("class");
-		Logger.info("[Verify]-> Actual [" + actualStatus + "] Expected to contain [_active]");
-		Assert.assertTrue(actualStatus.contains("_active"));
+		logVerify("Favourite button class", actualStatus, "contains [_active]");
+		Assert.assertTrue(actualStatus.contains("_active"),
+				"Expected favourite button to contain '_active' but got: " + actualStatus);
 	}
 }

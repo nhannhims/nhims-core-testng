@@ -23,7 +23,7 @@ public class Navigation {
 		BrowserExtensions.waitPageLoading();
 	}
 
-	public static void toReferesh() {
+	public static void toRefresh() {
 		Browsers.browser().navigate().refresh();
 		Logger.info("Browser navigate to [REFRESH]");
 		BrowserExtensions.waitPageLoading();

@@ -33,23 +33,23 @@ public class TestListener implements ITestListener {
 
 	@Override
 	public void onStart(ITestContext context) {
-		Logger.Info("### [START] Suite Context: " + context.getName());
+		Logger.info("### [START] Suite Context: " + context.getName());
 	}
 
 	@Override
 	public void onFinish(ITestContext context) {
-		Logger.Info("### [END] Suite Context: " + context.getName());
+		Logger.info("### [END] Suite Context: " + context.getName());
 	}
 
 	@Override
 	public void onTestStart(ITestResult result) {
-		Logger.Info("*[TEST][START][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.info("*[TEST][START][" + getMethodName(result) + "] " + getTestDescription(result));
 		if (HFile.getConfig(ConfigFile.driver).equals(DriverLoad.Chrome.toString())) {
 			DriverController.instance.startChromeDriver();
-			Logger.Info("### [START][CHROME] Load Driver");
+			Logger.info("### [START][CHROME] Load Driver");
 		}
 		if (HFile.getConfig(ConfigFile.video).equals("true") && !os.contains("mac os")) {
-			RecordVideo.StartRecord(getMethodName(result));
+			RecordVideo.startRecord(getMethodName(result));
 		}
 	}
 
@@ -61,13 +61,13 @@ public class TestListener implements ITestListener {
 		if (HFile.getConfig(ConfigFile.video).equals("true") && !os.contains("mac os")) {
 			RecordVideo.stopRecord();
 		}
-		Logger.Info("*[TEST][END][PASSED][" + getMethodName(result) + "] " + getTestDescription(result));
-		Logger.Info(" ");
+		Logger.info("*[TEST][END][PASSED][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.info(" ");
 		try {
 			DriverController.instance.stopDriver();
-			Logger.Info("### [END] Stop Driver");
+			Logger.info("### [END] Stop Driver");
 		} catch (Exception e) {
-			Logger.Error("Can not handle quit driver: " + e.getMessage());
+			Logger.error("Can not handle quit driver: " + e.getMessage());
 		}
 	}
 
@@ -79,24 +79,24 @@ public class TestListener implements ITestListener {
 		if (HFile.getConfig(ConfigFile.video).equals("true") && !os.contains("mac os")) {
 			RecordVideo.stopRecord();
 		}
-		Logger.Info("*[TEST][END][FAILED][" + getMethodName(result) + "] " + getTestDescription(result));
-		Logger.Info(" ");
+		Logger.info("*[TEST][END][FAILED][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.info(" ");
 		try {
 			DriverController.instance.stopDriver();
-			Logger.Info("### [END] Stop Driver");
+			Logger.info("### [END] Stop Driver");
 		} catch (Exception e) {
-			Logger.Error("Can not handle quit driver: " + e.getMessage());
+			Logger.error("Can not handle quit driver: " + e.getMessage());
 		}
 	}
 
 	@Override
 	public void onTestSkipped(ITestResult result) {
-		Logger.Info("*[TEST][END][SKIPPED][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.info("*[TEST][END][SKIPPED][" + getMethodName(result) + "] " + getTestDescription(result));
 		try {
 			DriverController.instance.stopDriver();
-			Logger.Info("### [END] Stop Driver");
+			Logger.info("### [END] Stop Driver");
 		} catch (Exception e) {
-			Logger.Error("Can not handle quit driver: " + e.getMessage());
+			Logger.error("Can not handle quit driver: " + e.getMessage());
 		}
 	}
 }

@@ -23,7 +23,7 @@ public class Control extends BaseControl {
 		if (iframe != null) {
 			this.iframe = null;
 			Browsers.browser().switchTo().defaultContent();
-			Logger.Info("-----(Switch) Default");
+			Logger.info("-----(Switch) Default");
 		}
 
 	}
@@ -34,7 +34,7 @@ public class Control extends BaseControl {
 		if (iframe != null) {
 			this.iframe = iframe;
 			Browsers.browser().switchTo().frame(getElement(iframe));
-			Logger.Info("-----(Switch) IFrame");
+			Logger.info("-----(Switch) IFrame");
 		}
 		this.timeout = timeout;
 	}
@@ -46,7 +46,7 @@ public class Control extends BaseControl {
 	}
 
 	public Control setDynamicLocator(Object... values) {
-		Logger.Info("(Set Dynamic Value) >> " + xpathOrCssSelector);
+		Logger.info("(Set Dynamic Value) >> " + xpathOrCssSelector);
 		String formattedSelector = HString.replace(this.xpathOrCssSelector, values);
 		return new Control(formattedSelector, this.iframe, this.timeout, this.element);
 	}
@@ -56,7 +56,7 @@ public class Control extends BaseControl {
 	}
 
 	private void find() {
-		Logger.Info("(Find Element) >> " + xpathOrCssSelector);
+		Logger.info("(Find Element) >> " + xpathOrCssSelector);
 		if (timeout == null) {
 			element = getElement(xpathOrCssSelector);
 		} else {
@@ -119,11 +119,11 @@ public class Control extends BaseControl {
 		try {
 			Browsers.waitExplicit(TimeConst.SEC_NORMAL_WAIT).until(ExpectedConditions.visibilityOf(element));
 			flag = true;
-			Logger.Info("> E > is visible");
+			Logger.info("> E > is visible");
 		} catch (Exception e) {
 			// TODO: handle exception
 			flag = false;
-			Logger.Info("> E > is not visible");
+			Logger.info("> E > is not visible");
 		}
 		return flag;
 	}
@@ -132,9 +132,9 @@ public class Control extends BaseControl {
 		boolean flag = false;
 		if (countElement(xpathOrCssSelector) > 0) {
 			flag = true;
-			Logger.Info("> E > is display");
+			Logger.info("> E > is display");
 		} else {
-			Logger.Info("> E > is not display");
+			Logger.info("> E > is not display");
 		}
 		return flag;
 	}

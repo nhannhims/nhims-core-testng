@@ -15,7 +15,7 @@ public class BaseControl {
 				element = Browsers.browser().findElement(By.xpath(xpathOrCssSeletor));
 			} catch (Exception e) {
 				// TODO: handle exception
-				Logger.Error(e.getLocalizedMessage());
+				Logger.error(e.getLocalizedMessage());
 				throw new RuntimeException(e.getMessage());
 			}
 
@@ -24,7 +24,7 @@ public class BaseControl {
 				element = Browsers.browser().findElement(By.cssSelector(xpathOrCssSeletor));
 			} catch (Exception e) {
 				// TODO: handle exception
-				Logger.Error(e.getLocalizedMessage());
+				Logger.error(e.getLocalizedMessage());
 				throw new RuntimeException(e.getMessage());
 			}
 		}

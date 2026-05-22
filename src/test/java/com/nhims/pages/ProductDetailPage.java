@@ -14,7 +14,7 @@ public class ProductDetailPage {
 
 	public static void verifyFavouriteButtonChangeStatus() {
 		String actualStatus = btnFavourite.get().getAttr("class");
-		Logger.Info("[Verify]-> Actual [" + actualStatus + "] Expected to contain [_active]");
+		Logger.info("[Verify]-> Actual [" + actualStatus + "] Expected to contain [_active]");
 		Assert.assertTrue(actualStatus.contains("_active"));
 	}
 }

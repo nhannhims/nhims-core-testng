@@ -65,7 +65,7 @@ public class Browsers {
 			Files.copy(source.toPath(), Paths.get(path));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Logger.Error("Can not screenshot");
+			Logger.error("Can not screenshot");
 			e.printStackTrace();
 		}
 	}

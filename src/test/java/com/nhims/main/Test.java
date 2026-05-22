@@ -14,7 +14,7 @@ public class Test extends BrowserExtensions {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		RecordVideo.StartRecord("TC001");
+		RecordVideo.startRecord("TC001");
 		DriverController.instance.startChromeDriver();
 		Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
 		DriverExtensions.createNewDriver(DriverLoad.Chrome);

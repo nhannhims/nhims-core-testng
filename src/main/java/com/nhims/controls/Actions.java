@@ -31,7 +31,7 @@ public class Actions {
 		String url = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
 		try {
 			element.click();
-			Logger.Info("> E > Click");
+			Logger.info("> E > Click");
 			String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
 			if (!url.equals(current)) {
 				BrowserExtensions.waitPageLoading();
@@ -48,30 +48,30 @@ public class Actions {
 
 	private void clickByJS() {
 		((JavascriptExecutor) Browsers.browser()).executeScript(JavaScript.ACTION_CLICK, element);
-		Logger.Info("> E > ClickJS");
+		Logger.info("> E > ClickJS");
 	}
 
 	public void rightClick() {
 		useAction().contextClick(element).perform();
-		Logger.Info("> E > Right Click");
+		Logger.info("> E > Right Click");
 	}
 
 	public void doubleClick() {
 		useAction().doubleClick(element).perform();
-		Logger.Info("> E > Double Click");
+		Logger.info("> E > Double Click");
 	}
 
 	public Actions type(String text) {
 		element.sendKeys(Keys.END);
 		element.sendKeys(Keys.SHIFT, Keys.HOME);
 		element.sendKeys(text);
-		Logger.Info("> E > Input text [" + text + "]");
+		Logger.info("> E > Input text [" + text + "]");
 		return this;
 	}
 
 	public void selectFile(String path) {
 		element.sendKeys(path);
-		Logger.Info("> E > Upload file has path [" + path + "]");
+		Logger.info("> E > Upload file has path [" + path + "]");
 	}
 
 	public Actions clear() {
@@ -80,9 +80,9 @@ public class Actions {
 			element.sendKeys(Keys.END);
 			element.sendKeys(Keys.SHIFT, Keys.HOME);
 			element.sendKeys(Keys.DELETE);
-			Logger.Info("> E > Clear input field by keyboard");
+			Logger.info("> E > Clear input field by keyboard");
 		} else {
-			Logger.Info("> E > Clear input field");
+			Logger.info("> E > Clear input field");
 		}
 		return this;
 	}
@@ -95,14 +95,14 @@ public class Actions {
 	public void check() {
 		if (!element.isSelected()) {
 			element.click();
-			Logger.Info("> E > Check a Checkbox/Radio Button");
+			Logger.info("> E > Check a Checkbox/Radio Button");
 		}
 	}
 
 	public void unCheck() {
 		if (element.isSelected()) {
 			element.click();
-			Logger.Info("> E > Uncheck a Checkbox");
+			Logger.info("> E > Uncheck a Checkbox");
 		}
 	}
 
@@ -113,7 +113,7 @@ public class Actions {
 
 	public void selectOptionByText(String optText) {
 		select().selectByVisibleText(optText);
-		Logger.Info("> E > Select Option has text [" + optText + "]");
+		Logger.info("> E > Select Option has text [" + optText + "]");
 	}
 
 	public void selectOptionText(String text) {
@@ -124,12 +124,12 @@ public class Actions {
 				break;
 			}
 		}
-		Logger.Info("> E > Select Option has text [" + text + "]");
+		Logger.info("> E > Select Option has text [" + text + "]");
 	}
 
 	public void deselectOptionByText(String optText) {
 		select().deselectByVisibleText(optText);
-		Logger.Info("> E > Deselect Option has text [" + optText + "]");
+		Logger.info("> E > Deselect Option has text [" + optText + "]");
 	}
 
 	public int getAllOption() {
@@ -138,7 +138,7 @@ public class Actions {
 
 	public String getAttr(String attr) {
 		String text = element.getAttribute(attr).toString();
-		Logger.Info("> E > Value of attribute [" + attr + "] is [" + text + "]");
+		Logger.info("> E > Value of attribute [" + attr + "] is [" + text + "]");
 		return text;
 	}
 
@@ -150,7 +150,7 @@ public class Actions {
 				text = getAttr("textContent");
 			}
 		} else {
-			Logger.Info("> E > The text is [" + text + "]");
+			Logger.info("> E > The text is [" + text + "]");
 		}
 		return text;
 	}

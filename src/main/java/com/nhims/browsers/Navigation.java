@@ -7,25 +7,25 @@ public class Navigation {
 	public static void visitTo(String url) {
 		BrowserExtensions.deleteAllCookies();
 		Browsers.browser().navigate().to(url);
-		Logger.Info("-----Open Web Appication [" + url + "]");
+		Logger.info("-----Open Web Appication [" + url + "]");
 		BrowserExtensions.waitPageLoading();
 	}
 
 	public static void toBack() {
 		Browsers.browser().navigate().back();
-		Logger.Info("Browser navigate to [BACK]");
+		Logger.info("Browser navigate to [BACK]");
 		BrowserExtensions.waitPageLoading();
 	}
 
 	public static void toNext() {
 		Browsers.browser().navigate().forward();
-		Logger.Info("Browser navigate to [NEXT]");
+		Logger.info("Browser navigate to [NEXT]");
 		BrowserExtensions.waitPageLoading();
 	}
 
 	public static void toReferesh() {
 		Browsers.browser().navigate().refresh();
-		Logger.Info("Browser navigate to [REFRESH]");
+		Logger.info("Browser navigate to [REFRESH]");
 		BrowserExtensions.waitPageLoading();
 	}
 

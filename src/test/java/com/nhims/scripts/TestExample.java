@@ -14,7 +14,7 @@ import com.nhims.pages.SearchPage;
 @Listeners(TestListener.class)
 public class TestExample {
 	@Test(testName = "TC0001", description = "This is testcase 001")
-	public void Test_Case_001() {
+	public void testCase001() {
 		Navigation.visitTo("https://flymee.jp/");
 		GenaralPage.executeSearchProduct("工房PCボード");
 		SearchPage.selectProduct("工房PCボード");
@@ -23,7 +23,7 @@ public class TestExample {
 	}
 
 	@Test(testName = "TC0002", description = "This is testcase 002")
-	public void Test_Case_002() {
+	public void testCase002() {
 		Navigation.visitTo("https://flymee.jp/");
 		GenaralPage.executeSearchProduct("工房PCボード");
 		SearchPage.selectProduct("工房PCボード");

@@ -48,7 +48,7 @@ public class RecordVideo extends ScreenRecorder {
 		return new File(movieFolder, name + "." + Registry.getInstance().getExtension(fileFormat));
 	}
 
-	public static void StartRecord(String methodName) {
+	public static void startRecord(String methodName) {
 		File file = new File("./test-reports/videos/" + videoFolder + "/");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int width = screenSize.width;
@@ -75,7 +75,7 @@ public class RecordVideo extends ScreenRecorder {
 			screenRecorder.start();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Logger.Error("Can not start record video");
+			Logger.error("Can not start record video");
 			e.printStackTrace();
 		}
 
@@ -86,7 +86,7 @@ public class RecordVideo extends ScreenRecorder {
 			screenRecorder.stop();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			Logger.Error("Can not stop record video");
+			Logger.error("Can not stop record video");
 		}
 	}
 }

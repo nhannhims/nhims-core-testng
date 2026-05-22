@@ -16,28 +16,28 @@ public class Logger {
 	private static String logName = "Log_" + HDate.formatDate("yyyyMMddhhmmss");
 	private static boolean logFlag = Convert.stringToBoolean(HFile.getConfig(ConfigFile.logger).toString());
 
-	public static void Info(String infoMessage) {
+	public static void info(String infoMessage) {
 		if (logFlag == true) {
 			writeLog("[INFO] " + infoMessage);
 		}
 		System.out.println("[INFO] " + infoMessage);
 	}
 
-	public static void Warning(String warMessage) {
+	public static void warning(String warMessage) {
 		if (logFlag == true) {
 			writeLog("[WARNING] " + warMessage);
 		}
 		System.out.println("[WARNING] " + warMessage);
 	}
 
-	public static void Error(String errMessage) {
+	public static void error(String errMessage) {
 		if (logFlag == true) {
 			writeLog("[ERROR] " + errMessage);
 		}
 		System.out.println("[ERROR] " + errMessage);
 	}
 
-	public static void System(String folderName, String fileName, String messsage) {
+	public static void system(String folderName, String fileName, String messsage) {
 		if (logFlag == true) {
 			writeLog(folderName, fileName, "[SYSTEM] " + messsage);
 		}

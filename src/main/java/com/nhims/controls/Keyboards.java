@@ -18,7 +18,7 @@ public class Keyboards {
 	public void enter() {
 		String url = Navigation.getCurrentUrl();
 		element.sendKeys(Keys.ENTER);
-		Logger.Info("> E > Press [Enter]");
+		Logger.info("> E > Press [Enter]");
 		String current = Navigation.getCurrentUrl();
 		if (!url.equals(current)) {
 			BrowserExtensions.waitPageLoading();

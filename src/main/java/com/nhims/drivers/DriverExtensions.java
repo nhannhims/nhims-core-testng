@@ -14,24 +14,24 @@ public class DriverExtensions extends Browsers {
 	public static void createNewDriver(Object browserType) {
 		if (browserType.equals(DriverLoad.Chrome)) {
 			newDriver = ChromeDriverControl.load();
-			Logger.Info("-----(Load)(" + browserType + ") new driver is created");
+			Logger.info("-----(Load)(" + browserType + ") new driver is created");
 		}
 	}
 
 	public static void switchWebDriver(Object driverName) {
 		if (driverName.equals(DriverStatus.New)) {
 			setDriver(newDriver);
-			Logger.Info("-----(Switch) > [New Driver]");
+			Logger.info("-----(Switch) > [New Driver]");
 		} else {
 			setDriver(currentDriver);
-			Logger.Info("-----(Switch) > [Old Driver]");
+			Logger.info("-----(Switch) > [Old Driver]");
 		}
 	}
 
 	public static void stopNewDriver() {
 		if (newDriver != null) {
 			newDriver.quit();
-			Logger.Info("-----(Stop New Driver)");
+			Logger.info("-----(Stop New Driver)");
 		}
 	}
 }

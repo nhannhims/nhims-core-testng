@@ -25,9 +25,9 @@ public class BrowserExtensions {
 		}
 
 		if (flag == true) {
-			Logger.Info("[" + currentUrl + "] loading is successfull");
+			Logger.info("[" + currentUrl + "] loading is successfull");
 		} else {
-			Logger.Warning("[" + currentUrl + "] loading has problem, time wait is [" + TimeConst.SEC_SHORT_WAIT + "]");
+			Logger.warning("[" + currentUrl + "] loading has problem, time wait is [" + TimeConst.SEC_SHORT_WAIT + "]");
 		}
 	}
 
@@ -37,12 +37,12 @@ public class BrowserExtensions {
 
 	public static void deleteAllCookies() {
 		Browsers.browser().manage().deleteAllCookies();
-		Logger.Info("-----Delete All Cookies");
+		Logger.info("-----Delete All Cookies");
 	}
 
 	public static void openNewTab() {
 		((JavascriptExecutor) Browsers.browser()).executeScript("window.open();");
-		Logger.Info("-----Open new Tab on browser");
+		Logger.info("-----Open new Tab on browser");
 	}
 
 	public static ArrayList<String> getAllTabs() {
@@ -53,19 +53,19 @@ public class BrowserExtensions {
 	public static void moveToNewTab() {
 		ArrayList<String> tabs = getAllTabs();
 		Browsers.browser().switchTo().window(tabs.get(tabs.size() - 1));
-		Logger.Info("-----Move to new Tab on browser");
+		Logger.info("-----Move to new Tab on browser");
 	}
 
 	public static void moveToDefaultTab() {
 		ArrayList<String> tabs = getAllTabs();
 		Browsers.browser().switchTo().window(tabs.get(0));
-		Logger.Info("-----Move to Default Tab on browser");
+		Logger.info("-----Move to Default Tab on browser");
 	}
 
 	public static void moveToTabWithIndex(int idx) {
 		ArrayList<String> tabs = getAllTabs();
 		Browsers.browser().switchTo().window(tabs.get(idx));
-		Logger.Info("-----Move to Tab has index [" + idx + "]");
+		Logger.info("-----Move to Tab has index [" + idx + "]");
 	}
 
 	public static void moveTo(Object location) {

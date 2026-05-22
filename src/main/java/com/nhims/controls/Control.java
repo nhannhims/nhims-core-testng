@@ -4,6 +4,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import com.nhims.browsers.Browsers;
 import com.nhims.constants.JavaScript;
 import com.nhims.constants.TimeConst;
 import com.nhims.utils.Convert;
@@ -21,7 +22,7 @@ public class Control extends BaseControl {
 		this.xpathOrCssSelector = xpathOrCssSelector;
 		if (iframe != null) {
 			this.iframe = null;
-			browser().switchTo().defaultContent();
+			Browsers.browser().switchTo().defaultContent();
 			Logger.Info("-----(Switch) Default");
 		}
 
@@ -32,7 +33,7 @@ public class Control extends BaseControl {
 		this.xpathOrCssSelector = xpathOrCssSelector;
 		if (iframe != null) {
 			this.iframe = iframe;
-			browser().switchTo().frame(getElement(iframe));
+			Browsers.browser().switchTo().frame(getElement(iframe));
 			Logger.Info("-----(Switch) IFrame");
 		}
 		this.timeout = timeout;
@@ -68,13 +69,13 @@ public class Control extends BaseControl {
 				} else {
 					for (int j = 0; j < 9; j++) {
 						if (j == 0) {
-							waitByMiliSec(100);
+							Browsers.waitByMiliSec(100);
 						} else {
 							if (isDisplay()) {
 								element = getElement(xpathOrCssSelector);
 								break;
 							} else {
-								waitByMiliSec(100);
+								Browsers.waitByMiliSec(100);
 							}
 						}
 					}
@@ -99,14 +100,14 @@ public class Control extends BaseControl {
 		if (!isFocus(element)) {
 			useAction().scrollToElement(element).perform();
 			if (!isFocus(element)) {
-				((JavascriptExecutor) browser()).executeScript(JavaScript.SCROLL_TO_ELEMENT, element);
+				((JavascriptExecutor) Browsers.browser()).executeScript(JavaScript.SCROLL_TO_ELEMENT, element);
 			}
 		}
 	}
 
 	private boolean isFocus(WebElement element) {
 		boolean flag = false;
-		if (browser().switchTo().activeElement().equals(element)) {
+		if (Browsers.browser().switchTo().activeElement().equals(element)) {
 			flag = true;
 		}
 		return flag;
@@ -116,7 +117,7 @@ public class Control extends BaseControl {
 		boolean flag = false;
 		find();
 		try {
-			waitExplicit(TimeConst.SEC_NORMAL_WAIT).until(ExpectedConditions.visibilityOf(element));
+			Browsers.waitExplicit(TimeConst.SEC_NORMAL_WAIT).until(ExpectedConditions.visibilityOf(element));
 			flag = true;
 			Logger.Info("> E > is visible");
 		} catch (Exception e) {

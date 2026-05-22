@@ -7,12 +7,12 @@ import org.openqa.selenium.interactions.Actions;
 import com.nhims.browsers.Browsers;
 import com.nhims.utils.Logger;
 
-public class BaseControl extends Browsers {
+public class BaseControl {
 	protected WebElement getElement(String xpathOrCssSeletor) {
 		WebElement element = null;
 		if (xpathOrCssSeletor.startsWith("/") || xpathOrCssSeletor.startsWith("(")) {
 			try {
-				element = browser().findElement(By.xpath(xpathOrCssSeletor));
+				element = Browsers.browser().findElement(By.xpath(xpathOrCssSeletor));
 			} catch (Exception e) {
 				// TODO: handle exception
 				Logger.Error(e.getLocalizedMessage());
@@ -21,7 +21,7 @@ public class BaseControl extends Browsers {
 
 		} else {
 			try {
-				element = browser().findElement(By.cssSelector(xpathOrCssSeletor));
+				element = Browsers.browser().findElement(By.cssSelector(xpathOrCssSeletor));
 			} catch (Exception e) {
 				// TODO: handle exception
 				Logger.Error(e.getLocalizedMessage());
@@ -34,15 +34,15 @@ public class BaseControl extends Browsers {
 	protected int countElement(String xpathOrCssSeletor) {
 		int count = 0;
 		if (xpathOrCssSeletor.startsWith("/") || xpathOrCssSeletor.startsWith("(")) {
-			count = browser().findElements(By.xpath(xpathOrCssSeletor)).size();
+			count = Browsers.browser().findElements(By.xpath(xpathOrCssSeletor)).size();
 		} else {
-			count = browser().findElements(By.cssSelector(xpathOrCssSeletor)).size();
+			count = Browsers.browser().findElements(By.cssSelector(xpathOrCssSeletor)).size();
 		}
 		return count;
 	}
 
 	protected Actions useAction() {
-		Actions action = new Actions(browser());
+		Actions action = new Actions(Browsers.browser());
 		return action;
 	}
 }

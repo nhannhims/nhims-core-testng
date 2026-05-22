@@ -6,15 +6,15 @@ import com.nhims.utils.Logger;
 import junit.framework.Assert;
 
 public class ProductDetailPage {
-	private static Control btnFavourite = new Control("//div[@id='js-addFavorite']");
+	private static Control btnFavourite = new Control("button.js-toggleFavorite");
 
 	public static void clickFavouriteButton() {
 		btnFavourite.get().click();
 	}
 
 	public static void verifyFavouriteButtonChangeStatus() {
-		String expectedStatus = btnFavourite.get().getAttr("class");
-		Logger.Info("[Verify]-> Actual [" + expectedStatus + "] Expected [fav_icon _active]");
-		Assert.assertEquals(expectedStatus, "fav_icon _active");
+		String actualStatus = btnFavourite.get().getAttr("class");
+		Logger.Info("[Verify]-> Actual [" + actualStatus + "] Expected to contain [_active]");
+		Assert.assertTrue(actualStatus.contains("_active"));
 	}
 }

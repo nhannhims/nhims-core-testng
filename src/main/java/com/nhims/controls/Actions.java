@@ -8,18 +8,23 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
+import com.nhims.browsers.Browsers;
 import com.nhims.browsers.BrowserExtensions;
 import com.nhims.browsers.Navigation;
 import com.nhims.constants.JavaScript;
 import com.nhims.utils.Convert;
 import com.nhims.utils.Logger;
 
-public class Actions extends BaseControl {
+public class Actions {
 	private WebElement element;
 
 	public Actions(WebElement element) {
 		// TODO Auto-generated constructor stub
 		this.element = element;
+	}
+
+	private org.openqa.selenium.interactions.Actions useAction() {
+		return new org.openqa.selenium.interactions.Actions(Browsers.browser());
 	}
 
 	public void click() {
@@ -42,7 +47,7 @@ public class Actions extends BaseControl {
 	}
 
 	private void clickByJS() {
-		((JavascriptExecutor) browser()).executeScript(JavaScript.ACTION_CLICK, element);
+		((JavascriptExecutor) Browsers.browser()).executeScript(JavaScript.ACTION_CLICK, element);
 		Logger.Info("> E > ClickJS");
 	}
 

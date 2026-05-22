@@ -76,7 +76,7 @@ public class Actions {
 
 	public Actions clear() {
 		element.clear();
-		if (getValue() == null || getValue() == "") {
+		if (getValue() == null || getValue().isEmpty()) {
 			element.sendKeys(Keys.END);
 			element.sendKeys(Keys.SHIFT, Keys.HOME);
 			element.sendKeys(Keys.DELETE);
@@ -137,16 +137,18 @@ public class Actions {
 	}
 
 	public String getAttr(String attr) {
-		String text = element.getAttribute(attr).toString();
+		String val = element.getAttribute(attr);
+		String text = val != null ? val : "";
 		Logger.info("> E > Value of attribute [" + attr + "] is [" + text + "]");
 		return text;
 	}
 
 	public String getText() {
-		String text = element.getText().toString();
-		if (text == null || text == "") {
+		String rawText = element.getText();
+		String text = rawText != null ? rawText : "";
+		if (text.isEmpty()) {
 			text = getAttr("innerHTML");
-			if (text == null || text == "") {
+			if (text == null || text.isEmpty()) {
 				text = getAttr("textContent");
 			}
 		} else {

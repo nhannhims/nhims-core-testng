@@ -62,63 +62,141 @@ nhims-core-testng/
 
 ---
 
-## 💻 Hướng dẫn cài đặt & chạy kiểm thử
+## 💻 Hướng dẫn cài đặt & chạy kiểm thử cho người mới bắt đầu
 
-### Yêu cầu hệ thống
-- **Java JDK 11+** đã cài đặt và cấu hình `JAVA_HOME`.
-- **Maven 3.6+** đã cài đặt.
-- Trình duyệt tương ứng đã cài đặt (Chrome, Firefox hoặc Edge).
+Để bắt đầu chạy dự án kiểm thử này, bạn cần thực hiện theo các bước chi tiết dưới đây:
 
-### Cấu hình trước khi chạy
+### 📑 Bước 1: Chuẩn bị môi trường hệ thống
 
-Mở file `src/test/resources/settings/configs.properties` và điều chỉnh:
+#### 1. Cài đặt Java Development Kit (JDK 11)
+Framework được xây dựng tối ưu trên **Java 11**.
+- **Tải về:** Bạn có thể tải JDK 11 từ [Eclipse Temurin](https://adoptium.net/temurin/releases/?version=11) hoặc [Azul Zulu](https://www.azul.com/downloads/?package=jdk#zulu).
+- **Cấu hình biến môi trường (Windows):**
+  1. Mở *Environment Variables* (Biến môi trường) trên Windows.
+  2. Tạo một biến hệ thống mới tên là `JAVA_HOME` với giá trị là đường dẫn đến thư mục cài đặt JDK (Ví dụ: `C:\Program Files\Eclipse Adoptium\jdk-11.x.x`).
+  3. Tìm biến `Path` trong danh sách, chọn *Edit*, nhấn *New* và thêm dòng sau: `%JAVA_HOME%\bin`.
+- **Kiểm tra cài đặt:** Mở Terminal/CMD và gõ lệnh:
+  ```bash
+  java -version
+  ```
+  *(Kết quả hiển thị phiên bản Java 11.x là thành công)*
+
+#### 2. Cài đặt Apache Maven (Quản lý dự án & Build)
+- **Tải về:** Tải bản ZIP của Maven từ [trang chủ Apache Maven](https://maven.apache.org/download.cgi).
+- **Cấu hình biến môi trường (Windows):**
+  1. Giải nén file ZIP vừa tải vào một thư mục cố định (Ví dụ: `C:\maven`).
+  2. Tạo biến hệ thống mới tên là `MAVEN_HOME` với giá trị là thư mục giải nén (`C:\maven`).
+  3. Thêm `%MAVEN_HOME%\bin` vào biến hệ thống `Path`.
+- **Kiểm tra cài đặt:** Mở Terminal/CMD và gõ lệnh:
+  ```bash
+  mvn -version
+  ```
+
+#### 3. Cài đặt Allure Commandline (Để xem báo cáo kiểm thử)
+Để mở được báo cáo HTML Allure trực quan, máy của bạn cần có Allure CLI.
+- **Windows (Khuyên dùng Scoop):**
+  ```powershell
+  scoop install allure
+  ```
+  *Hoặc cài đặt thủ công:* Tải bản Allure .zip mới nhất từ [GitHub Allure Releases](https://github.com/allure-framework/allure2/releases), giải nén và thêm đường dẫn thư mục `bin` vào biến môi trường `Path`.
+- **macOS (Dùng Homebrew):**
+  ```bash
+  brew install allure
+  ```
+- **Kiểm tra cài đặt:**
+  ```bash
+  allure --version
+  ```
+
+---
+
+### 📥 Bước 2: Clone dự án và Mở trên IDE
+
+1. **Tải mã nguồn dự án** về máy tính của bạn.
+2. **Mở trên IntelliJ IDEA (Khuyên dùng):**
+   - Chọn **Open** -> Chọn thư mục dự án chứa file `pom.xml`.
+   - IDE sẽ tự động nhận diện dự án Maven và bắt đầu tải các thư viện cần thiết. Quá trình tải có thể mất vài phút ở lần đầu tiên.
+   - Đảm bảo thiết lập cấu hình SDK của dự án là Java 11 (Vào *File* -> *Project Structure* -> *Project* -> chọn SDK Java 11).
+
+---
+
+### ⚙️ Bước 3: Cấu hình tham số kiểm thử
+
+Mở file [configs.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/configs.properties) để điều chỉnh các thiết lập mong muốn:
 
 ```properties
-# Môi trường: staging | production | nightlight
+# 1. Chọn môi trường chạy: staging | production | nightlight
 environment = staging
 
-# Trình duyệt: chrome | firefox | edge
+# 2. Chọn trình duyệt: chrome | firefox | edge
 driver = chrome
 
-# Chụp màn hình khi test kết thúc: true | false
+# 3. Tự động chụp ảnh màn hình khi kết thúc testcase: true | false
 capture = true
 
-# Ghi video màn hình: true | false (chỉ hỗ trợ Windows)
+# 4. Tự động quay video màn hình chạy test: true | false (chỉ hỗ trợ Windows)
 video = false
 
-# Ghi log ra file: true | false
+# 5. Ghi log hoạt động chi tiết ra console và file: true | false
 logger = true
 ```
 
-### Các lệnh chạy chính
+*Lưu ý:* URL của từng môi trường tương ứng được định nghĩa bên trong các file [staging.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/staging.properties), [production.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/production.properties), [nightlight.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/nightlight.properties).
+
+---
+
+### 🚀 Bước 4: Chạy kiểm thử (Execution)
+
+Bạn có thể chạy kiểm thử bằng dòng lệnh hoặc trực tiếp trên công cụ lập trình (IDE):
+
+#### Cách 1: Sử dụng Maven dòng lệnh (Terminal/Command Line)
+Mở Terminal tại thư mục gốc của dự án và chạy các lệnh tương ứng:
 
 ```bash
-# Biên dịch dự án
-mvn clean compile
+# Chạy suite kiểm thử Regression (testng-regression.xml)
+mvn clean test -DsuiteXmlFile=testng-regression.xml
 
-# Biên dịch bao gồm cả test sources
-mvn clean test-compile
+# Chạy suite kiểm thử Smoke nhanh (testng-smoke.xml)
+mvn clean test -DsuiteXmlFile=testng-smoke.xml
 
-# Chạy toàn bộ test suite (dùng testng.xml)
-mvn test
+# Chạy suite mặc định (testng.xml)
+mvn clean test
 
-# Chạy một test class cụ thể
+# Chạy riêng 1 Test Class cụ thể
 mvn test -Dtest=TestExample
 
-# Sinh Allure HTML Report (sau khi mvn test)
-mvn allure:serve
+# Chạy riêng 1 Test Case (Method) cụ thể
+mvn test -Dtest=TestExample#testCase001
 ```
 
-### Chạy song song (Parallel)
+#### Cách 2: Chạy trực tiếp trên IntelliJ IDEA
+- Click chuột phải vào file XML bộ kiểm thử (ví dụ [testng-regression.xml](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/testng-regression.xml)) và chọn **Run**.
+- Hoặc mở file [TestExample.java](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/java/com/nhims/scripts/TestExample.java) và nhấn vào biểu tượng **nút Run màu xanh** cạnh tên class hoặc method test.
 
-Mặc định `testng.xml` cấu hình `parallel="methods"` với 4 threads. Để điều chỉnh:
+---
+
+### 📊 Bước 5: Đọc báo cáo và kết quả kiểm thử
+
+Sau khi chạy xong, kết quả được xuất ra các thư mục sau:
+1. **Logs hoạt động:** Được lưu tại `test-reports/logs/app.log` (ghi nhận chi tiết từng bước click, nhập liệu, chuyển trang, luồng chạy).
+2. **Ảnh chụp lỗi (Screenshot):** Tự động lưu khi test case thất bại tại thư mục `test-reports/screenshots/<timestamp>/`.
+3. **Video ghi hình:** Được ghi và xuất ra thư mục `test-reports/videos/<timestamp>/` (nếu cấu hình `video=true`).
+4. **Báo cáo Allure (HTML Report sinh động):**
+   Chạy lệnh sau trên terminal để Allure khởi động Web Server và tự động mở báo cáo trên trình duyệt:
+   ```bash
+   mvn allure:serve
+   ```
+
+---
+
+### 👥 Chạy song song (Parallel execution)
+
+Mặc định, regression suite được thiết lập chạy song song ở cấp độ phương thức (`parallel="methods"`) với 4 luồng chạy đồng thời. Bạn có thể thay đổi số luồng này trong file cấu hình xml:
 
 ```xml
-<!-- testng.xml -->
-<suite name="NHIMS Test Suite" parallel="methods" thread-count="4">
+<suite name="NHIMS Regression Suite" parallel="methods" thread-count="4">
 ```
-
-Các giá trị `parallel`: `methods` | `classes` | `tests` | `none`
+Các chế độ song song hỗ trợ: `methods` (phương thức) | `classes` (lớp kiểm thử) | `tests` (thẻ test) | `none` (chạy tuần tự).
 
 ---
 

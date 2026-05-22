@@ -1,6 +1,7 @@
 package com.nhims.utils;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import com.nhims.constants.FileConst;
 
@@ -10,7 +11,7 @@ public class HFolder {
 		File file = new File(folderPath);
 		if (!file.exists()) {
 			flag = false;
-			file.mkdir();
+			file.mkdirs();
 		} else {
 			flag = true;
 		}
@@ -20,7 +21,7 @@ public class HFolder {
 	public static void createMoreFolder(String... folders) {
 		String path = FileConst.MAIN_PATH;
 		for (int i = 0; i < folders.length; i++) {
-			path = path + "//" + folders[i];
+			path = Paths.get(path, folders[i]).toString();
 			createNewFolder(path);
 		}
 	}

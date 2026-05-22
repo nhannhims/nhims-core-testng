@@ -36,7 +36,6 @@ public class Actions {
 				BrowserExtensions.waitPageLoading();
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			clickByJS();
 			String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
 			if (!url.equals(current)) {
@@ -115,6 +114,11 @@ public class Actions {
 		Logger.info("> E > Select Option has text [" + optText + "]");
 	}
 
+	/**
+	 * @deprecated Use {@link #selectOptionByText(String)} instead, which uses the standard Select API.
+	 * This manual loop version is kept for edge cases where the Select API does not work.
+	 */
+	@Deprecated
 	public void selectOptionText(String text) {
 		List<WebElement> options = element.findElements(By.tagName("option"));
 		for (WebElement option : options) {
@@ -131,7 +135,10 @@ public class Actions {
 		Logger.info("> E > Deselect Option has text [" + optText + "]");
 	}
 
-	public int getAllOption() {
+	/**
+	 * Returns the number of currently selected options in this select element.
+	 */
+	public int getSelectedOptionCount() {
 		return select().getAllSelectedOptions().size();
 	}
 

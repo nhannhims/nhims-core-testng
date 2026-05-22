@@ -12,22 +12,13 @@ import com.nhims.utils.Logger;
 
 public class BrowserExtensions {
 	public static void waitPageLoading() {
-		boolean flag = false;
 		String currentUrl = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
-		for (int i = 0; i < TimeConst.SEC_SHORT_WAIT; i++) {
-			String stage = pageLoadingStage();
-			if (stage.equals("complete")) {
-				flag = true;
-				break;
-			} else {
-				Browsers.waitBySec(TimeConst.SEC_MINIMUM_WAIT);
-			}
-		}
-
-		if (flag == true) {
-			Logger.info("[" + currentUrl + "] loading is successfull");
-		} else {
-			Logger.warning("[" + currentUrl + "] loading has problem, time wait is [" + TimeConst.SEC_SHORT_WAIT + "]");
+		try {
+			Browsers.waitExplicit(TimeConst.SEC_PAGE_LOAD_WAIT)
+					.until(driver -> pageLoadingStage().equals("complete"));
+			Logger.info("[" + currentUrl + "] loading is successful");
+		} catch (Exception e) {
+			Logger.warning("[" + currentUrl + "] loading has problem, time wait is [" + TimeConst.SEC_PAGE_LOAD_WAIT + "]");
 		}
 	}
 

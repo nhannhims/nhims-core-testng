@@ -13,12 +13,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.nhims.constants.FileConst;
 import com.nhims.drivers.DriverController;
-import com.nhims.utils.HDate;
 import com.nhims.utils.HFolder;
+import com.nhims.utils.HDate;
 import com.nhims.utils.Logger;
 
 public class Browsers {
-	private static String screenshotFolder = HDate.formatDate("yyyy_MM_dd_hh_mm_ss");
+	private static String screenshotFolder = HDate.formatDate("yyyy_MM_dd_HHmmss");
+
+	/**
+	 * Sets the screenshot session folder. Should be called once per suite run
+	 * (typically from TestListener.onStart) so all threads share the same folder.
+	 */
+	public static void setScreenshotFolder(String folderName) {
+		screenshotFolder = folderName;
+	}
 
 	public static WebDriver browser() {
 		return DriverController.instance.getDriver();

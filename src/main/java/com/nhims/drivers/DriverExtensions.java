@@ -3,7 +3,6 @@ package com.nhims.drivers;
 import org.openqa.selenium.WebDriver;
 
 import com.nhims.browsers.Browsers;
-import com.nhims.constants.Configs.DriverLoad;
 import com.nhims.constants.Configs.DriverStatus;
 import com.nhims.utils.Logger;
 
@@ -12,8 +11,8 @@ public class DriverExtensions {
 	private static final ThreadLocal<WebDriver> newDriverThread = new ThreadLocal<>();
 
 	public static void createNewDriver(Object browserType) {
-		if (browserType.equals(DriverLoad.Chrome)) {
-			WebDriver driver = ChromeDriverControl.load();
+		if (browserType != null) {
+			WebDriver driver = BrowserFactory.create(browserType.toString());
 			newDriverThread.set(driver);
 			Logger.info("-----(Load)(" + browserType + ") new driver is created");
 		}

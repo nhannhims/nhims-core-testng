@@ -30,6 +30,22 @@ public class HFile {
 		return val != null ? val.toString() : null;
 	}
 
+	/**
+	 * Gets a required configuration value. Throws IllegalStateException if the key is not found.
+	 *
+	 * @param configName the configuration key (resolved via configs.properties)
+	 * @return the configuration value (never null)
+	 * @throws IllegalStateException if the configuration key is not found
+	 */
+	public static String getConfigRequired(Object configName) {
+		String value = getConfig(configName);
+		if (value == null) {
+			throw new IllegalStateException(
+					"Required configuration key [" + configName + "] not found in " + FileConst.SETTING_CONFIG_FILE);
+		}
+		return value;
+	}
+
 	public static String getConfigEnvironment(Object configName) {
 		Object environment = getConfig("environment");
 		String filePath = FileConst.ENVIRONMENT_DEFAULT_FILE;

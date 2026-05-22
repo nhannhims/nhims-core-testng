@@ -9,7 +9,12 @@ import com.nhims.drivers.DriverExtensions;
 import com.nhims.utils.HFile;
 import com.nhims.utils.RecordVideo;
 
-public class Test {
+/**
+ * Manual demo runner — NOT a TestNG test case.
+ * Run this class's main() method directly to verify framework functionality
+ * without TestNG involvement.
+ */
+public class DemoRunner {
 
 	public static void main(String[] args) {
 		RecordVideo.startRecord("TC001");

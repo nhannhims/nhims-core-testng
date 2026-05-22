@@ -55,7 +55,7 @@ public class Logger {
 	private static void addLogToFile(Writer w, String text) {
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
-		String content = HString.replace("%s >>> %s", sdf.format(date), text);
+		String content = HString.format("%s >>> %s", sdf.format(date), text);
 		try {
 			w.append(content);
 			w.append("\r\n");

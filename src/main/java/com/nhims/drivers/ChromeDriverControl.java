@@ -4,6 +4,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+/**
+ * @deprecated Use {@link BrowserFactory#create(String)} instead.
+ * This class is kept only for backward compatibility with DriverExtensions.
+ */
+@Deprecated
 public class ChromeDriverControl {
 	public static WebDriver load() {
 		ChromeOptions opts = new ChromeOptions();

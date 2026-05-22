@@ -7,9 +7,16 @@ import org.testng.ITestResult;
 import com.nhims.browsers.Browsers;
 import com.nhims.constants.Configs.ConfigFile;
 import com.nhims.drivers.DriverController;
+import com.nhims.utils.HDate;
 import com.nhims.utils.HFile;
 import com.nhims.utils.Logger;
 import com.nhims.utils.RecordVideo;
+
+import io.qameta.allure.Allure;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class TestListener implements ITestListener {
 	private final String os = System.getProperty("os.name").toLowerCase();
@@ -32,6 +39,7 @@ public class TestListener implements ITestListener {
 
 	@Override
 	public void onStart(ITestContext context) {
+		Browsers.setScreenshotFolder(HDate.formatDate("yyyy_MM_dd_hh_mm_ss"));
 		Logger.info("### [START] Suite Context: " + context.getName());
 	}
 
@@ -71,15 +79,38 @@ public class TestListener implements ITestListener {
 	// ─── Private helpers ─────────────────────────────────────────────────────────
 
 	private void captureAndStop(ITestResult result, String status) {
+		String methodName = getMethodName(result);
 		if ("true".equalsIgnoreCase(HFile.getConfig(ConfigFile.capture))) {
-			Browsers.takeScreenshot(getMethodName(result));
+			Browsers.takeScreenshot(methodName);
+			if ("FAILED".equals(status)) {
+				attachScreenshotToAllure(methodName);
+			}
 		}
 		if ("true".equalsIgnoreCase(HFile.getConfig(ConfigFile.video)) && !os.contains("mac os")) {
 			RecordVideo.stopRecord();
 		}
-		Logger.info("*[TEST][END][" + status + "][" + getMethodName(result) + "] " + getTestDescription(result));
+		Logger.info("*[TEST][END][" + status + "][" + methodName + "] " + getTestDescription(result));
 		Logger.info(" ");
 		stopDriverQuietly();
+	}
+
+	private void attachScreenshotToAllure(String methodName) {
+		try {
+			File dir = new File(com.nhims.constants.FileConst.SCREENSHOT_FOLDER);
+			if (!dir.exists() || !dir.isDirectory()) return;
+			File[] subDirs = dir.listFiles(File::isDirectory);
+			if (subDirs == null) return;
+			for (File subDir : subDirs) {
+				File img = new File(subDir, methodName + ".png");
+				if (img.exists()) {
+					InputStream is = new FileInputStream(img);
+					Allure.addAttachment("Screenshot on Failure", "image/png", is, ".png");
+					break;
+				}
+			}
+		} catch (Exception e) {
+			Logger.warning("Could not attach screenshot to Allure: " + e.getMessage());
+		}
 	}
 
 	private void stopDriverQuietly() {

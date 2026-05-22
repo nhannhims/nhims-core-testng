@@ -33,7 +33,7 @@ public class Control extends BaseControl {
 
 	public Control setDynamicLocator(Object... values) {
 		Logger.info("(Set Dynamic Value) >> " + xpathOrCssSelector);
-		String formattedSelector = HString.replace(this.xpathOrCssSelector, values);
+		String formattedSelector = HString.format(this.xpathOrCssSelector, values);
 		return new Control(formattedSelector, this.iframe, this.timeout);
 	}
 

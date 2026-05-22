@@ -1,0 +1,60 @@
+name: NHIMS Automation CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Automation Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Install Google Chrome and Xvfb
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable xvfb
+
+    - name: Run Tests with Headless Display (Xvfb)
+      env:
+        DISPLAY: :99
+      run: |
+        Xvfb :99 -screen 0 1920x1080x24 -ac &
+        sleep 3
+        # Runs the suite configured in pom.xml (default: testng.xml)
+        # To run regression suite: mvn clean test -DsuiteXmlFile=testng-regression.xml
+        mvn clean test -DsuiteXmlFile=testng-regression.xml
+
+    - name: Generate Allure Static HTML Report
+      if: always()
+      run: |
+        mvn allure:report
+
+    - name: Upload Test Artifacts (Logs, Screenshots, Videos)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-execution-reports
+        path: test-reports/
+        retention-days: 7
+
+    - name: Upload Allure Static Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-html-report
+        path: target/site/allure-maven-plugin/
+        retention-days: 7

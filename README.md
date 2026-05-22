@@ -182,10 +182,18 @@ Sau khi chạy xong, kết quả được xuất ra các thư mục sau:
 2. **Ảnh chụp lỗi (Screenshot):** Tự động lưu khi test case thất bại tại thư mục `test-reports/screenshots/<timestamp>/`.
 3. **Video ghi hình:** Được ghi và xuất ra thư mục `test-reports/videos/<timestamp>/` (nếu cấu hình `video=true`).
 4. **Báo cáo Allure (HTML Report sinh động):**
-   Chạy lệnh sau trên terminal để Allure khởi động Web Server và tự động mở báo cáo trên trình duyệt:
-   ```bash
-   mvn allure:serve
-   ```
+   *Lưu ý:* Do chính sách bảo mật CORS của trình duyệt, việc click đúp mở trực tiếp file `index.html` trong thư mục `allure-maven-plugin` sẽ hiển thị trang trống. Bạn cần xem báo cáo bằng một trong hai cách dưới đây:
+   
+   - **Cách 1: Sử dụng Maven Allure Serve (Khuyên dùng)**
+     Khởi động một web server cục bộ và tự động mở báo cáo trên trình duyệt:
+     ```bash
+     mvn allure:serve
+     ```
+   - **Cách 2: Sử dụng Allure CLI (Nếu đã cài Allure trên máy)**
+     Sau khi sinh báo cáo tĩnh bằng lệnh `mvn allure:report`, bạn chạy lệnh dưới đây để mở:
+     ```bash
+     allure open target/site/allure-maven-plugin
+     ```
 
 ---
 
@@ -225,15 +233,3 @@ public class MyNewPage extends BasePage {
 }
 ```
 
----
-
-## 📊 Báo cáo kiểm thử (Allure Report)
-
-```bash
-# Sau khi mvn test, chạy lệnh này để xem báo cáo trên browser:
-mvn allure:serve
-
-# Hoặc sinh ra thư mục báo cáo tĩnh:
-mvn allure:report
-# → Mở target/site/allure-maven-plugin/index.html
-```

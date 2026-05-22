@@ -37,6 +37,11 @@ public class BrowserFactory {
 		}
 	}
 
+	/**
+	 * Configures ChromeOptions and builds a new ChromeDriver instance.
+	 *
+	 * @return configured ChromeDriver instance
+	 */
 	private static WebDriver buildChrome() {
 		ChromeOptions opts = new ChromeOptions();
 		opts.addArguments("--start-maximized");
@@ -46,12 +51,22 @@ public class BrowserFactory {
 		return new ChromeDriver(opts);
 	}
 
+	/**
+	 * Configures FirefoxOptions and builds a new FirefoxDriver instance.
+	 *
+	 * @return configured FirefoxDriver instance
+	 */
 	private static WebDriver buildFirefox() {
 		FirefoxOptions opts = new FirefoxOptions();
 		opts.addArguments("--start-maximized");
 		return new FirefoxDriver(opts);
 	}
 
+	/**
+	 * Configures EdgeOptions and builds a new EdgeDriver instance.
+	 *
+	 * @return configured EdgeDriver instance
+	 */
 	private static WebDriver buildEdge() {
 		EdgeOptions opts = new EdgeOptions();
 		opts.addArguments("--start-maximized");

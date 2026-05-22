@@ -8,6 +8,13 @@ import com.nhims.browsers.Browsers;
 import com.nhims.utils.Logger;
 
 public class BaseControl {
+	/**
+	 * Locates a WebElement using XPath (if it starts with '/' or '(') or CSS selector.
+	 * Throws a RuntimeException if the element is not found.
+	 *
+	 * @param xpathOrCssSelector the locator string (XPath or CSS selector)
+	 * @return the located WebElement
+	 */
 	protected WebElement getElement(String xpathOrCssSelector) {
 		WebElement element = null;
 		By by = (xpathOrCssSelector.startsWith("/") || xpathOrCssSelector.startsWith("("))
@@ -22,6 +29,13 @@ public class BaseControl {
 		return element;
 	}
 
+	/**
+	 * Counts the number of elements matching the locator.
+	 * Returns 0 if an exception occurs.
+	 *
+	 * @param xpathOrCssSelector the locator string
+	 * @return the number of matching elements
+	 */
 	protected int countElement(String xpathOrCssSelector) {
 		int count = 0;
 		By by = (xpathOrCssSelector.startsWith("/") || xpathOrCssSelector.startsWith("("))
@@ -35,6 +49,11 @@ public class BaseControl {
 		return count;
 	}
 
+	/**
+	 * Creates an instance of Selenium Actions for advanced interactions.
+	 *
+	 * @return a Selenium Actions instance
+	 */
 	protected Actions useAction() {
 		return new Actions(Browsers.browser());
 	}

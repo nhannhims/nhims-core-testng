@@ -14,7 +14,7 @@
 
     <test name="Regression Tests">
         <classes>
-            <class name="com.nhims.scripts.TestExample"/>
+            <class name="com.nhims.scripts.RegisterTest"/>
         </classes>
     </test>
 

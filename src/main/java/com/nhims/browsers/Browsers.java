@@ -28,6 +28,11 @@ public class Browsers {
 		screenshotFolder = folderName;
 	}
 
+	/**
+	 * Retrieves the active WebDriver instance from the controller.
+	 *
+	 * @return the active WebDriver instance
+	 */
 	public static WebDriver browser() {
 		return DriverController.instance.getDriver();
 	}
@@ -58,19 +63,40 @@ public class Browsers {
 		}
 	}
 
+	/**
+	 * Gets the active WebDriver instance (alias for browser()).
+	 *
+	 * @return the active WebDriver instance
+	 */
 	public static WebDriver getDriver() {
 		return browser();
 	}
 
+	/**
+	 * Sets the active WebDriver instance in the controller.
+	 *
+	 * @param newDriver the new WebDriver instance to associate
+	 */
 	public static void setDriver(WebDriver newDriver) {
 		DriverController.instance.setDriver(newDriver);
 	}
 
+	/**
+	 * Creates a WebDriverWait helper for explicit wait conditions.
+	 *
+	 * @param sec the wait timeout in seconds
+	 * @return a WebDriverWait object
+	 */
 	public static WebDriverWait waitExplicit(int sec) {
 		WebDriverWait wait = new WebDriverWait(browser(), Duration.ofSeconds(sec));
 		return wait;
 	}
 
+	/**
+	 * Captures a screenshot of the active browser screen and saves it.
+	 *
+	 * @param scenario the name of the test scenario/method to name the file
+	 */
 	public static void takeScreenshot(String scenario) {
 		HFolder.createMoreFolder("test-reports", "screenshots", screenshotFolder);
 		String path = Paths.get(FileConst.SCREENSHOT_FOLDER, screenshotFolder, scenario + ".png").toString();

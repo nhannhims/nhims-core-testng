@@ -10,10 +10,18 @@ import com.nhims.utils.Logger;
 public class Keyboards {
 	private WebElement element;
 
+	/**
+	 * Constructor to initialize Keyboards wrapper with a WebElement.
+	 *
+	 * @param element the WebElement to perform keyboard actions on
+	 */
 	public Keyboards(WebElement element) {
 		this.element = element;
 	}
 
+	/**
+	 * Sends the ENTER key to the element. Waits for page loading if the URL changes.
+	 */
 	public void enter() {
 		String url = Navigation.getCurrentUrl();
 		element.sendKeys(Keys.ENTER);

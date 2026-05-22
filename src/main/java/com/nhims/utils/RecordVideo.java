@@ -31,12 +31,33 @@ public class RecordVideo extends ScreenRecorder {
 	private static final String videoFolder = HDate.formatDate("yyyy_MM_dd_HHmmss");
 	private final String name;
 
+	/**
+	 * Constructor for RecordVideo extending ScreenRecorder.
+	 *
+	 * @param cfg          graphics configuration of the screen
+	 * @param captureArea  the rectangle area of the screen to capture
+	 * @param fileFormat   the file format for storing the recording (e.g. AVI)
+	 * @param screenFormat the video format for screen capture
+	 * @param mouseFormat  the video format for mouse cursor capture
+	 * @param audioFormat  the audio format for sound capture
+	 * @param movieFolder  the directory to save the output video file
+	 * @param name         the custom name for the video file
+	 * @throws IOException  if an I/O error occurs
+	 * @throws AWTException if the graphics environment does not support screen capture
+	 */
 	public RecordVideo(GraphicsConfiguration cfg, Rectangle captureArea, Format fileFormat, Format screenFormat,
 			Format mouseFormat, Format audioFormat, File movieFolder, String name) throws IOException, AWTException {
 		super(cfg, captureArea, fileFormat, screenFormat, mouseFormat, audioFormat, movieFolder);
 		this.name = name;
 	}
 
+	/**
+	 * Overrides the creation of the output movie file to use a custom naming scheme.
+	 *
+	 * @param fileFormat the output file format
+	 * @return the output file descriptor
+	 * @throws IOException if a folder cannot be created or file path is invalid
+	 */
 	@Override
 	protected File createMovieFile(Format fileFormat) throws IOException {
 		if (!movieFolder.exists()) {
@@ -47,6 +68,12 @@ public class RecordVideo extends ScreenRecorder {
 		return new File(movieFolder, name + "." + Registry.getInstance().getExtension(fileFormat));
 	}
 
+	/**
+	 * Starts recording the screen and saves it as an AVI file named after the method.
+	 * Stores the active recorder in a thread-local variable screenRecorderThread.
+	 *
+	 * @param methodName the name of the test method being recorded
+	 */
 	public static void startRecord(String methodName) {
 		File file = new File("./test-reports/videos/" + videoFolder + "/");
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -71,6 +98,9 @@ public class RecordVideo extends ScreenRecorder {
 		}
 	}
 
+	/**
+	 * Stops the screen recorder for the current thread and removes it from ThreadLocal.
+	 */
 	public static void stopRecord() {
 		try {
 			ScreenRecorder recorder = screenRecorderThread.get();

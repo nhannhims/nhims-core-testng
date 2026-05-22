@@ -1,235 +1,229 @@
 # NHIMS Core TestNG — Automation Framework
 
-Dự án kiểm thử tự động hóa (Automation Testing) được xây dựng dựa trên sự kết hợp giữa **Java**, **Selenium WebDriver**, **TestNG** và quản lý phụ thuộc bằng **Maven**. Framework áp dụng mô hình thiết kế **Page Object Model (POM)** kết hợp các thư viện tùy biến (Custom Controls & Utilities) nhằm tối ưu hiệu năng và độ ổn định khi chạy song song (parallel).
+This automation testing project is built using a combination of **Java**, **Selenium WebDriver**, **TestNG**, and dependency management via **Maven**. The framework implements the **Page Object Model (POM)** design pattern combined with custom controls and utilities to optimize performance and ensure thread-safe stability during parallel execution.
 
 ---
 
-## 🛠️ Công nghệ sử dụng (Tech Stack)
+## 🛠️ Tech Stack
 
-| Thành phần | Phiên bản | Mục đích |
+| Component | Version | Purpose |
 |:---|:---:|:---|
-| Java | 11+ | Ngôn ngữ lập trình |
-| Selenium WebDriver | 4.18.1 | Điều khiển trình duyệt |
-| TestNG | 7.7.1 | Framework kiểm thử & song song |
-| Allure Report | 2.25.0 | Báo cáo HTML đẹp & chi tiết |
-| SLF4J + Logback | 2.0.7 / 1.4.8 | Ghi log bất đồng bộ, an toàn đa luồng |
-| Monte Screen Recorder | 0.7.7.0 | Ghi video quá trình chạy test |
-| Maven | 3.x | Quản lý dự án & build |
+| Java | 11+ | Programming Language |
+| Selenium WebDriver | 4.18.1 | Browser Control |
+| TestNG | 7.7.1 | Testing Framework & Parallel Execution |
+| Allure Report | 2.25.0 | High-quality HTML Reports |
+| SLF4J + Logback | 2.0.7 / 1.4.8 | Thread-safe Asynchronous Logging |
+| Monte Screen Recorder | 0.7.7.0 | Screen Recording for Test Execution |
+| Maven | 3.x | Build and Project Management |
 
 ---
 
-## 📂 Cấu trúc dự án (Project Structure)
+## 📂 Project Structure
 
 ```text
 nhims-core-testng/
 ├── src/
-│   ├── main/
-│   │   ├── java/com/nhims/
-│   │   │   ├── browsers/      # BrowserExtensions, Navigation, Browsers
-│   │   │   ├── constants/     # Configs, FileConst, JavaScript, TimeConst
-│   │   │   ├── controls/      # Control (stateless), Actions, BaseControl, Keyboards
-│   │   │   ├── drivers/       # BrowserFactory, DriverController, DriverExtensions
-│   │   │   └── utils/         # Logger (SLF4J), RecordVideo, HFile, HDate, HFolder, Convert
-│   │   └── resources/
-│   │       └── logback.xml    # Cấu hình logging (Console + RollingFile)
-│   └── test/
-│       ├── java/com/nhims/
-│       │   ├── data/          # Hằng số dữ liệu kiểm thử (FlyMeeConst)
-│       │   ├── listeners/     # TestListener — lifecycle hooks (screenshot, video, driver)
-│       │   ├── pages/         # Page Objects: BasePage, GeneralPage, SearchPage, ProductDetailPage
-│       │   └── scripts/       # Test scripts: TestExample
-│       └── resources/settings/
-│           ├── configs.properties     # Cấu hình chính (driver, environment, video, capture...)
-│           ├── staging.properties     # URL môi trường Staging
-│           ├── production.properties  # URL môi trường Production
-│           └── nightlight.properties  # URL môi trường Nightlight
-├── testng.xml                 # Cấu hình bộ kiểm thử (parallel, thread-count)
+├── main/
+│   ├── java/com/nhims/
+│   │   ├── browsers/      # BrowserExtensions, Navigation, Browsers
+│   │   ├── constants/     # Configs, FileConst, JavaScript, TimeConst
+│   │   ├── controls/      # Control (stateless), Actions, BaseControl, Keyboards
+│   │   ├── drivers/       # BrowserFactory, DriverController, DriverExtensions
+│   │   └── utils/         # Logger (SLF4J), RecordVideo, HFile, HDate, HFolder, Convert
+│   └── resources/
+│       └── logback.xml    # Logging Configuration (Console + RollingFile)
+└── test/
+    ├── java/com/nhims/
+    │   ├── data/          # Test Data Constants
+    │   ├── listeners/     # TestListener — lifecycle hooks (screenshot, video, driver)
+    │   ├── pages/         # Page Objects: BasePage, HomePage, SignupLoginPage, RegisterPage, etc.
+    │   └── scripts/       # Test scripts: RegisterTest
+    └── resources/settings/
+        ├── configs.properties     # Core configuration (driver, environment, video, capture...)
+        ├── staging.properties     # Staging Environment URL
+        ├── production.properties  # Production Environment URL
+        └── nightlight.properties  # Nightlight Environment URL
+├── testng.xml                 # Test Suite Configuration (parallel, thread-count)
 ├── pom.xml                    # Maven dependencies & plugins
 └── README.md
 ```
 
 ---
 
-## 🚀 Tính năng nổi bật
+## 🚀 Key Features
 
-1. **Thread-safe Parallel Execution:** Toàn bộ cơ sở hạ tầng sử dụng `ThreadLocal` cho Driver, ScreenRecorder và tìm kiếm phần tử Stateless — hỗ trợ chạy song song thực sự mà không bị Race Condition.
-2. **BrowserFactory:** Hỗ trợ Chrome, Firefox, Edge chỉ qua thay đổi `driver=` trong file cấu hình.
-3. **Explicit Wait:** Lớp `Control` sử dụng `WebDriverWait` + `ExpectedConditions` thay vì `Thread.sleep`.
-4. **SLF4J + Logback:** Ghi log bất đồng bộ, cuộn file theo ngày (30 ngày), định dạng chuẩn.
-5. **Allure Report:** Sinh báo cáo HTML chi tiết sau mỗi lần chạy `mvn site`.
-6. **Auto Screenshot & Video:** Chụp màn hình và ghi video tự động theo cấu hình, mỗi luồng quản lý video riêng.
-7. **Multi-environment:** Hỗ trợ Staging, Production, Nightlight — chuyển môi trường qua `environment=` trong configs.
+1. **Thread-safe Parallel Execution:** The infrastructure uses `ThreadLocal` for WebDriver instance management, ScreenRecorder, and stateless element searches, ensuring parallel execution without race conditions.
+2. **BrowserFactory:** Supports Chrome, Firefox, and Edge via a simple change of `driver=` in the configuration file.
+3. **Explicit Wait:** The `Control` class utilizes `WebDriverWait` and `ExpectedConditions` instead of brittle `Thread.sleep` calls.
+4. **SLF4J + Logback:** Asynchronous logging with daily rolling files (30-day retention) and standard log formatting.
+5. **Allure Report:** Rich HTML report generation out-of-the-box via `mvn allure:report`.
+6. **Auto Screenshot & Video:** Automatically captures screenshots and records execution videos on test failures, with independent video capture per thread.
+7. **Multi-environment Support:** Pre-configured environments for Staging, Production, and Nightlight, switchable via the `environment` parameter in configurations.
 
 ---
 
-## 💻 Hướng dẫn cài đặt & chạy kiểm thử cho người mới bắt đầu
+## 💻 Installation & Getting Started
 
-Để bắt đầu chạy dự án kiểm thử này, bạn cần thực hiện theo các bước chi tiết dưới đây:
+Follow these steps to set up and run the tests locally:
 
-### 📑 Bước 1: Chuẩn bị môi trường hệ thống
+### 📑 Step 1: System Requirements & Prerequisites
 
-#### 1. Cài đặt Java Development Kit (JDK 11)
-Framework được xây dựng tối ưu trên **Java 11**.
-- **Tải về:** Bạn có thể tải JDK 11 từ [Eclipse Temurin](https://adoptium.net/temurin/releases/?version=11) hoặc [Azul Zulu](https://www.azul.com/downloads/?package=jdk#zulu).
-- **Cấu hình biến môi trường (Windows):**
-  1. Mở *Environment Variables* (Biến môi trường) trên Windows.
-  2. Tạo một biến hệ thống mới tên là `JAVA_HOME` với giá trị là đường dẫn đến thư mục cài đặt JDK (Ví dụ: `C:\Program Files\Eclipse Adoptium\jdk-11.x.x`).
-  3. Tìm biến `Path` trong danh sách, chọn *Edit*, nhấn *New* và thêm dòng sau: `%JAVA_HOME%\bin`.
-- **Kiểm tra cài đặt:** Mở Terminal/CMD và gõ lệnh:
+#### 1. Java Development Kit (JDK 11)
+The framework is optimized for **Java 11**.
+- **Download:** Get JDK 11 from [Eclipse Temurin](https://adoptium.net/temurin/releases/?version=11) or [Azul Zulu](https://www.azul.com/downloads/?package=jdk#zulu).
+- **Environment Variables Configuration (Windows):**
+  1. Open *Environment Variables* on Windows.
+  2. Create a new system variable named `JAVA_HOME` pointing to the JDK installation directory (e.g., `C:\Program Files\Eclipse Adoptium\jdk-11.x.x`).
+  3. Locate the `Path` variable in the system variables list, click *Edit*, select *New*, and add: `%JAVA_HOME%\bin`.
+- **Verify Installation:** Open your Terminal/Command Prompt and run:
   ```bash
   java -version
   ```
-  *(Kết quả hiển thị phiên bản Java 11.x là thành công)*
+  *(It should display Java version 11.x)*
 
-#### 2. Cài đặt Apache Maven (Quản lý dự án & Build)
-- **Tải về:** Tải bản ZIP của Maven từ [trang chủ Apache Maven](https://maven.apache.org/download.cgi).
-- **Cấu hình biến môi trường (Windows):**
-  1. Giải nén file ZIP vừa tải vào một thư mục cố định (Ví dụ: `C:\maven`).
-  2. Tạo biến hệ thống mới tên là `MAVEN_HOME` với giá trị là thư mục giải nén (`C:\maven`).
-  3. Thêm `%MAVEN_HOME%\bin` vào biến hệ thống `Path`.
-- **Kiểm tra cài đặt:** Mở Terminal/CMD và gõ lệnh:
+#### 2. Apache Maven
+- **Download:** Download the binary zip archive from the [Apache Maven website](https://maven.apache.org/download.cgi).
+- **Environment Variables Configuration (Windows):**
+  1. Extract the downloaded zip archive to a permanent directory (e.g., `C:\maven`).
+  2. Create a new system variable named `MAVEN_HOME` with the path to the extracted folder (`C:\maven`).
+  3. Add `%MAVEN_HOME%\bin` to the `Path` system variable.
+- **Verify Installation:** Open Terminal/Command Prompt and run:
   ```bash
   mvn -version
   ```
 
-#### 3. Cài đặt Allure Commandline (Để xem báo cáo kiểm thử)
-Để mở được báo cáo HTML Allure trực quan, máy của bạn cần có Allure CLI.
-- **Windows (Khuyên dùng Scoop):**
+#### 3. Allure Commandline
+To open and view the generated reports locally, you need the Allure CLI installed.
+- **Windows (Recommended using Scoop):**
   ```powershell
   scoop install allure
   ```
-  *Hoặc cài đặt thủ công:* Tải bản Allure .zip mới nhất từ [GitHub Allure Releases](https://github.com/allure-framework/allure2/releases), giải nén và thêm đường dẫn thư mục `bin` vào biến môi trường `Path`.
-- **macOS (Dùng Homebrew):**
+  *Manual Installation:* Download the latest Allure zip release from [Allure GitHub Releases](https://github.com/allure-framework/allure2/releases), extract it, and add the path to the `bin` directory to your system `Path`.
+- **macOS (Using Homebrew):**
   ```bash
   brew install allure
   ```
-- **Kiểm tra cài đặt:**
+- **Verify Installation:**
   ```bash
   allure --version
   ```
 
 ---
 
-### 📥 Bước 2: Clone dự án và Mở trên IDE
+### 📥 Step 2: Clone and Open Project in IDE
 
-1. **Tải mã nguồn dự án** về máy tính của bạn.
-2. **Mở trên IntelliJ IDEA (Khuyên dùng):**
-   - Chọn **Open** -> Chọn thư mục dự án chứa file `pom.xml`.
-   - IDE sẽ tự động nhận diện dự án Maven và bắt đầu tải các thư viện cần thiết. Quá trình tải có thể mất vài phút ở lần đầu tiên.
-   - Đảm bảo thiết lập cấu hình SDK của dự án là Java 11 (Vào *File* -> *Project Structure* -> *Project* -> chọn SDK Java 11).
+1. **Clone or download the project** source code to your machine.
+2. **Open with IntelliJ IDEA (Recommended):**
+   - Click **Open** -> Select the project root folder containing the `pom.xml` file.
+   - The IDE will auto-detect the Maven project and download dependencies. This may take a few minutes on the first run.
+   - Set the project SDK to Java 11 (Go to *File* -> *Project Structure* -> *Project* -> Select Java 11 SDK).
 
 ---
 
-### ⚙️ Bước 3: Cấu hình tham số kiểm thử
+### ⚙️ Step 3: Test Configuration
 
-Mở file [configs.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/configs.properties) để điều chỉnh các thiết lập mong muốn:
+Open the [configs.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/configs.properties) file to adjust the run settings:
 
 ```properties
-# 1. Chọn môi trường chạy: staging | production | nightlight
+# 1. Environment: staging | production | nightlight
 environment = staging
 
-# 2. Chọn trình duyệt: chrome | firefox | edge
+# 2. Browser: chrome | firefox | edge
 driver = chrome
 
-# 3. Tự động chụp ảnh màn hình khi kết thúc testcase: true | false
+# 3. Enable screenshot capture on test completion/fail: true | false
 capture = true
 
-# 4. Tự động quay video màn hình chạy test: true | false (chỉ hỗ trợ Windows)
+# 4. Enable video recording of test runs: true | false (only supported on Windows)
 video = false
 
-# 5. Ghi log hoạt động chi tiết ra console và file: true | false
+# 5. Output detailed logs to console and log files: true | false
 logger = true
 ```
 
-*Lưu ý:* URL của từng môi trường tương ứng được định nghĩa bên trong các file [staging.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/staging.properties), [production.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/production.properties), [nightlight.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/nightlight.properties).
+*Note:* URLs for each environment are defined in [staging.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/staging.properties), [production.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/production.properties), and [nightlight.properties](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/resources/settings/nightlight.properties).
 
 ---
 
-### 🚀 Bước 4: Chạy kiểm thử (Execution)
+### 🚀 Step 4: Running Tests
 
-Bạn có thể chạy kiểm thử bằng dòng lệnh hoặc trực tiếp trên công cụ lập trình (IDE):
+You can execute the test suites via Command Line / Terminal or directly within the IDE:
 
-#### Cách 1: Sử dụng Maven dòng lệnh (Terminal/Command Line)
-Mở Terminal tại thư mục gốc của dự án và chạy các lệnh tương ứng:
+#### Method 1: Using Maven in Command Line
+Open a terminal in the root folder of the project and execute the relevant command:
 
 ```bash
-# Chạy suite kiểm thử Regression (testng-regression.xml)
-mvn clean test -DsuiteXmlFile=testng-regression.xml
-
-# Chạy suite kiểm thử Smoke nhanh (testng-smoke.xml)
-mvn clean test -DsuiteXmlFile=testng-smoke.xml
-
-# Chạy suite mặc định (testng.xml)
+# Run the complete test suite (testng.xml)
 mvn clean test
 
-# Chạy riêng 1 Test Class cụ thể
-mvn test -Dtest=TestExample
+# Run a specific test class
+mvn test -Dtest=RegisterTest
 
-# Chạy riêng 1 Test Case (Method) cụ thể
-mvn test -Dtest=TestExample#testCase001
+# Run a specific test method
+mvn test -Dtest=RegisterTest#testRegisterUser
 ```
 
-#### Cách 2: Chạy trực tiếp trên IntelliJ IDEA
-- Click chuột phải vào file XML bộ kiểm thử (ví dụ [testng-regression.xml](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/testng-regression.xml)) và chọn **Run**.
-- Hoặc mở file [TestExample.java](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/java/com/nhims/scripts/TestExample.java) và nhấn vào biểu tượng **nút Run màu xanh** cạnh tên class hoặc method test.
+#### Method 2: Running via IntelliJ IDEA
+- Right-click the test runner suite XML configuration file (e.g., [testng.xml](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/testng.xml)) and select **Run**.
+- Or open the test script class (e.g., [RegisterTest.java](file:///c:/Users/nhan.vuong/Desktop/Course/example/nhims-core/nhims-core-testng/src/test/java/com/nhims/scripts/RegisterTest.java)) and click the **green play button** next to the class or method definition.
 
 ---
 
-### 📊 Bước 5: Đọc báo cáo và kết quả kiểm thử
+### 📊 Step 5: Test Reports & Logs
 
-Sau khi chạy xong, kết quả được xuất ra các thư mục sau:
-1. **Logs hoạt động:** Được lưu tại `test-reports/logs/app.log` (ghi nhận chi tiết từng bước click, nhập liệu, chuyển trang, luồng chạy).
-2. **Ảnh chụp lỗi (Screenshot):** Tự động lưu khi test case thất bại tại thư mục `test-reports/screenshots/<timestamp>/`.
-3. **Video ghi hình:** Được ghi và xuất ra thư mục `test-reports/videos/<timestamp>/` (nếu cấu hình `video=true`).
-4. **Báo cáo Allure (HTML Report sinh động):**
-   *Lưu ý:* Do chính sách bảo mật CORS của trình duyệt, việc click đúp mở trực tiếp file `index.html` trong thư mục `allure-maven-plugin` sẽ hiển thị trang trống. Bạn cần xem báo cáo bằng một trong hai cách dưới đây:
+After the test run completes, output files are located in the following directories:
+1. **Application Logs:** Saved at `test-reports/logs/app.log`, capturing detailed framework operations (clicks, key entry, page loads, step events).
+2. **Failure Screenshots:** Automatically captured and stored under `test-reports/screenshots/<timestamp>/` if configured.
+3. **Execution Videos:** Recorded and saved under `test-reports/videos/<timestamp>/` (if `video=true`).
+4. **Allure HTML Report:**
+   *Note:* Due to browser CORS policies, opening the static `index.html` file in `target/site/allure-maven-plugin` directly might result in a blank page. Open the report using one of the following commands:
    
-   - **Cách 1: Sử dụng Maven Allure Serve (Khuyên dùng)**
-     Khởi động một web server cục bộ và tự động mở báo cáo trên trình duyệt:
+   - **Method 1: Using Maven Allure Serve (Recommended)**
+     Launches a local web server to serve the report and opens it in your default browser:
      ```bash
      mvn allure:serve
      ```
-   - **Cách 2: Sử dụng Allure CLI (Nếu đã cài Allure trên máy)**
-     Sau khi sinh báo cáo tĩnh bằng lệnh `mvn allure:report`, bạn chạy lệnh dưới đây để mở:
+   - **Method 2: Using Allure CLI**
+     After generating the report with `mvn allure:report`, run:
      ```bash
      allure open target/site/allure-maven-plugin
      ```
 
 ---
 
-### 👥 Chạy song song (Parallel execution)
+## 👥 Parallel Execution
 
-Mặc định, regression suite được thiết lập chạy song song ở cấp độ phương thức (`parallel="methods"`) với 4 luồng chạy đồng thời. Bạn có thể thay đổi số luồng này trong file cấu hình xml:
+By default, the test suite in `testng.xml` is configured to run tests in parallel using TestNG methods mode (`parallel="methods"`) with a thread count of 4:
 
 ```xml
 <suite name="NHIMS Regression Suite" parallel="methods" thread-count="4">
 ```
-Các chế độ song song hỗ trợ: `methods` (phương thức) | `classes` (lớp kiểm thử) | `tests` (thẻ test) | `none` (chạy tuần tự).
+Supported parallel modes: `methods` | `classes` | `tests` | `none`.
 
 ---
 
-## ⚙️ Cấu hình nâng cao
+## ⚙️ Advanced Configuration & Extension
 
-### Thêm môi trường mới
-1. Tạo file `src/test/resources/settings/<tenmoi>.properties` với `applicationUrl = <url>`.
-2. Thêm giá trị enum trong `Configs.Environment`.
-3. Thêm điều kiện trong `HFile.getConfigEnvironment()`.
+### Adding a New Test Environment
+1. Create a properties file at `src/test/resources/settings/<new_env>.properties` defining `applicationUrl = <url>`.
+2. Define the environment type in the `Configs.Environment` enum.
+3. Add mapping condition inside `HFile.getConfigEnvironment()`.
 
-### Thêm trình duyệt mới
-Mở `BrowserFactory.java` và thêm case mới:
+### Supporting a New Browser
+Open `BrowserFactory.java` and add your implementation:
 ```java
 case "safari":
     return new SafariDriver();
 ```
 
-### Thêm Page Object mới
+### Adding a New Page Object Class
 ```java
 public class MyNewPage extends BasePage {
     private static final Control myElement = new Control("//div[@id='my-element']");
 
+    @Step("Perform action on my element")
     public static void doSomething() {
         myElement.get().click();
     }
 }
 ```
-

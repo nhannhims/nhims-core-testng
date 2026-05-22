@@ -16,10 +16,20 @@ public class DriverController {
 	private DriverController() {
 	}
 
+	/**
+	 * Retrieves the thread-local WebDriver instance.
+	 *
+	 * @return the WebDriver instance for the current thread
+	 */
 	public WebDriver getDriver() {
 		return driverThread.get();
 	}
 
+	/**
+	 * Sets the thread-local WebDriver instance.
+	 *
+	 * @param driver the WebDriver instance to set
+	 */
 	public void setDriver(WebDriver driver) {
 		driverThread.set(driver);
 	}
@@ -36,7 +46,9 @@ public class DriverController {
 	}
 
 	/**
-	 * @deprecated Use startDriver() instead. Kept for backwards compatibility.
+	 * Starts a ChromeDriver instance for the current thread.
+	 *
+	 * @deprecated Use {@link #startDriver()} instead. Kept for backwards compatibility.
 	 */
 	@Deprecated
 	public void startChromeDriver() {
@@ -45,6 +57,9 @@ public class DriverController {
 		}
 	}
 
+	/**
+	 * Quits the active WebDriver instance for the current thread and removes it from ThreadLocal.
+	 */
 	public void stopDriver() {
 		WebDriver driver = driverThread.get();
 		if (driver != null) {

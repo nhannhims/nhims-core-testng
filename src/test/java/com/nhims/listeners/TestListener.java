@@ -21,33 +21,74 @@ import java.io.InputStream;
 public class TestListener implements ITestListener {
 	private final String os = System.getProperty("os.name").toLowerCase();
 
+	/**
+	 * Gets the custom test name from the TestNG result.
+	 *
+	 * @param result the TestNG execution result
+	 * @return the name of the test
+	 */
 	public String getTestName(ITestResult result) {
 		return result.getTestName();
 	}
 
+	/**
+	 * Gets the test description defined in the TestNG annotation.
+	 *
+	 * @param result the TestNG execution result
+	 * @return the test description string
+	 */
 	public String getTestDescription(ITestResult result) {
 		return result.getMethod().getDescription();
 	}
 
+	/**
+	 * Gets the class name of the executing test script.
+	 *
+	 * @param result the TestNG execution result
+	 * @return the full name of the test class
+	 */
 	public String getFileScriptName(ITestResult result) {
 		return result.getMethod().getTestClass().getName();
 	}
 
+	/**
+	 * Gets the method name of the executing test.
+	 *
+	 * @param result the TestNG execution result
+	 * @return the name of the test method
+	 */
 	public String getMethodName(ITestResult result) {
 		return result.getMethod().getMethodName();
 	}
 
+	/**
+	 * Hook executed when the test suite/context starts.
+	 * Initializes screenshot directory based on current timestamp.
+	 *
+	 * @param context the TestNG test context
+	 */
 	@Override
 	public void onStart(ITestContext context) {
 		Browsers.setScreenshotFolder(HDate.formatDate("yyyy_MM_dd_hh_mm_ss"));
 		Logger.info("### [START] Suite Context: " + context.getName());
 	}
 
+	/**
+	 * Hook executed when the test suite/context finishes.
+	 *
+	 * @param context the TestNG test context
+	 */
 	@Override
 	public void onFinish(ITestContext context) {
 		Logger.info("### [END] Suite Context: " + context.getName());
 	}
 
+	/**
+	 * Hook executed before a test method starts.
+	 * Initializes the WebDriver instance and optionally begins video recording.
+	 *
+	 * @param result the TestNG execution result
+	 */
 	@Override
 	public void onTestStart(ITestResult result) {
 		Logger.info("*[TEST][START][" + getMethodName(result) + "] " + getTestDescription(result));
@@ -60,16 +101,33 @@ public class TestListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * Hook executed when a test method passes successfully.
+	 * Captures screenshots and stops active recording/driver.
+	 *
+	 * @param result the TestNG execution result
+	 */
 	@Override
 	public void onTestSuccess(ITestResult result) {
 		captureAndStop(result, "PASSED");
 	}
 
+	/**
+	 * Hook executed when a test method fails.
+	 * Captures screenshot, attaches it to the Allure report, and stops active recording/driver.
+	 *
+	 * @param result the TestNG execution result
+	 */
 	@Override
 	public void onTestFailure(ITestResult result) {
 		captureAndStop(result, "FAILED");
 	}
 
+	/**
+	 * Hook executed when a test method is skipped.
+	 *
+	 * @param result the TestNG execution result
+	 */
 	@Override
 	public void onTestSkipped(ITestResult result) {
 		Logger.info("*[TEST][END][SKIPPED][" + getMethodName(result) + "] " + getTestDescription(result));
@@ -78,6 +136,12 @@ public class TestListener implements ITestListener {
 
 	// ─── Private helpers ─────────────────────────────────────────────────────────
 
+	/**
+	 * Common tear-down routine to capture state on completion/failure and stop browser driver.
+	 *
+	 * @param result the TestNG execution result
+	 * @param status the end status of the test ("PASSED" or "FAILED")
+	 */
 	private void captureAndStop(ITestResult result, String status) {
 		String methodName = getMethodName(result);
 		if ("true".equalsIgnoreCase(HFile.getConfig(ConfigFile.capture))) {
@@ -94,6 +158,11 @@ public class TestListener implements ITestListener {
 		stopDriverQuietly();
 	}
 
+	/**
+	 * Attaches a screenshot file matching the given test method name to the Allure report.
+	 *
+	 * @param methodName the name of the failing test method
+	 */
 	private void attachScreenshotToAllure(String methodName) {
 		try {
 			File dir = new File(com.nhims.constants.FileConst.SCREENSHOT_FOLDER);
@@ -113,6 +182,9 @@ public class TestListener implements ITestListener {
 		}
 	}
 
+	/**
+	 * Stops the browser driver without throwing exceptions.
+	 */
 	private void stopDriverQuietly() {
 		try {
 			DriverController.instance.stopDriver();

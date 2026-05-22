@@ -19,28 +19,57 @@ public class Control extends BaseControl {
 	private final String iframe;
 	private final String timeout;
 
+	/**
+	 * Constructor with element locator.
+	 *
+	 * @param xpathOrCssSelector the element locator string (XPath or CSS selector)
+	 */
 	public Control(String xpathOrCssSelector) {
 		this.xpathOrCssSelector = xpathOrCssSelector;
 		this.iframe = null;
 		this.timeout = null;
 	}
 
+	/**
+	 * Constructor with element locator, iframe locator, and timeout override.
+	 *
+	 * @param xpathOrCssSelector the element locator string
+	 * @param iframe             the iframe locator string
+	 * @param timeout            the wait timeout string in seconds
+	 */
 	public Control(String xpathOrCssSelector, String iframe, String timeout) {
 		this.xpathOrCssSelector = xpathOrCssSelector;
 		this.iframe = iframe;
 		this.timeout = timeout;
 	}
 
+	/**
+	 * Formats a dynamic locator string by replacing placeholders with values.
+	 *
+	 * @param values replacement values for formatting
+	 * @return a new Control instance with formatted locator
+	 */
 	public Control setDynamicLocator(Object... values) {
 		Logger.info("(Set Dynamic Value) >> " + xpathOrCssSelector);
 		String formattedSelector = HString.format(this.xpathOrCssSelector, values);
 		return new Control(formattedSelector, this.iframe, this.timeout);
 	}
 
+	/**
+	 * Gets the current raw locator string.
+	 *
+	 * @return the locator string
+	 */
 	public String getLocator() {
 		return xpathOrCssSelector;
 	}
 
+	/**
+	 * Finds the element on the page, switches to iframe if specified, and waits for visibility.
+	 * Also focuses the found element.
+	 *
+	 * @return the located WebElement
+	 */
 	private WebElement find() {
 		Logger.info("(Find Element) >> " + xpathOrCssSelector);
 		int sec = (timeout == null) ? TimeConst.SEC_NORMAL_WAIT : Convert.stringToInt(timeout);
@@ -64,11 +93,21 @@ public class Control extends BaseControl {
 		return el;
 	}
 
+	/**
+	 * Finds the element and returns an Actions wrapper for interactive commands.
+	 *
+	 * @return an Actions wrapper for the element
+	 */
 	public Actions get() {
 		WebElement el = find();
 		return new Actions(el);
 	}
 
+	/**
+	 * Focuses the element by moving the mouse cursor to it or scrolling it into view.
+	 *
+	 * @param el the element to focus
+	 */
 	private void focus(WebElement el) {
 		useAction().moveToElement(el).perform();
 		if (!isFocus(el)) {
@@ -79,6 +118,12 @@ public class Control extends BaseControl {
 		}
 	}
 
+	/**
+	 * Checks if the element is currently the active (focused) element in the browser.
+	 *
+	 * @param el the element to check
+	 * @return true if focused, false otherwise
+	 */
 	private boolean isFocus(WebElement el) {
 		boolean flag = false;
 		try {
@@ -91,6 +136,11 @@ public class Control extends BaseControl {
 		return flag;
 	}
 
+	/**
+	 * Checks if the element is visible on the page (displays and is searchable).
+	 *
+	 * @return true if visible, false otherwise
+	 */
 	public boolean isVisible() {
 		try {
 			WebElement el = find();
@@ -101,6 +151,11 @@ public class Control extends BaseControl {
 		}
 	}
 
+	/**
+	 * Checks if the element exists in the DOM.
+	 *
+	 * @return true if at least one matching element exists in DOM, false otherwise
+	 */
 	public boolean isDisplay() {
 		boolean flag = countElement(xpathOrCssSelector) > 0;
 		if (flag) {

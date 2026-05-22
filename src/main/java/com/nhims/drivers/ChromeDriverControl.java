@@ -10,6 +10,12 @@ import org.openqa.selenium.chrome.ChromeOptions;
  */
 @Deprecated
 public class ChromeDriverControl {
+	/**
+	 * Creates a new ChromeDriver instance with standard options.
+	 *
+	 * @return a new WebDriver ChromeDriver instance
+	 * @deprecated Use BrowserFactory.create("chrome") instead.
+	 */
 	public static WebDriver load() {
 		ChromeOptions opts = new ChromeOptions();
 		opts.addArguments("--start-maximized");

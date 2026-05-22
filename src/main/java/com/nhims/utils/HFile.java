@@ -12,10 +12,24 @@ import com.nhims.constants.FileConst;
 public class HFile {
 	private static final Map<String, Properties> configCache = new ConcurrentHashMap<>();
 
+	/**
+	 * Gets a configuration value from the default configuration file.
+	 *
+	 * @param configName the configuration key
+	 * @return the configuration value, or null if not found
+	 */
 	public static String getConfig(Object configName) {
 		return getConfig(FileConst.SETTING_CONFIG_FILE, configName);
 	}
 
+	/**
+	 * Gets a configuration value from a specific configuration file path.
+	 * Caches loaded properties for performance.
+	 *
+	 * @param filePath   the absolute or relative file path to the properties file
+	 * @param configName the configuration key
+	 * @return the configuration value, or null if not found
+	 */
 	public static String getConfig(String filePath, Object configName) {
 		Properties prop = configCache.computeIfAbsent(filePath, path -> {
 			Properties p = new Properties();
@@ -46,6 +60,13 @@ public class HFile {
 		return value;
 	}
 
+	/**
+	 * Gets a configuration value from the environment-specific properties file.
+	 * Resolves which environment properties file to load based on the 'environment' key in the default config.
+	 *
+	 * @param configName the configuration key
+	 * @return the environment-specific configuration value
+	 */
 	public static String getConfigEnvironment(Object configName) {
 		Object environment = getConfig("environment");
 		String filePath = FileConst.ENVIRONMENT_DEFAULT_FILE;

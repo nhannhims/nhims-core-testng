@@ -123,7 +123,7 @@ public class RegisterTest {
 		String currentUrl = Navigation.getCurrentUrl();
 		if (currentUrl.contains("google_vignette") || currentUrl.contains("#google_vignette")) {
 			Logger.info("Bypassing Google vignette ad by navigating to the home page");
-			Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
+			Navigation.navigateTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
 		}
 
 		// 16. Verify that 'Logged in as username' is visible

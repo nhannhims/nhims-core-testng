@@ -18,6 +18,18 @@ public class Navigation {
 	}
 
 	/**
+	 * Navigates the browser to the specified URL without deleting cookies first.
+	 *
+	 * @param url the destination URL
+	 */
+	public static void navigateTo(String url) {
+		Browsers.browser().navigate().to(url);
+		Logger.info("-----Navigate to [" + url + "]");
+		BrowserExtensions.waitPageLoading();
+	}
+
+
+	/**
 	 * Simulates clicking the browser back button.
 	 */
 	public static void toBack() {

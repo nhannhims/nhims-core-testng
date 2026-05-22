@@ -18,14 +18,10 @@ import com.nhims.utils.HFolder;
 import com.nhims.utils.Logger;
 
 public class Browsers {
-	private static WebDriver driver = null;
 	private static String screenshotFolder = HDate.formatDate("yyyy_MM_dd_hh_mm_ss");
 
 	public static WebDriver browser() {
-		if (driver == null) {
-			driver = DriverController.instance.driver;
-		}
-		return driver;
+		return DriverController.instance.getDriver();
 	}
 
 	public static void waitBySec(int sec) {
@@ -48,15 +44,11 @@ public class Browsers {
 	}
 
 	public static WebDriver getDriver() {
-		if (driver != null) {
-			return driver;
-		} else {
-			return null;
-		}
+		return browser();
 	}
 
 	public static void setDriver(WebDriver newDriver) {
-		driver = newDriver;
+		DriverController.instance.setDriver(newDriver);
 	}
 
 	public static WebDriverWait waitExplicit(int sec) {

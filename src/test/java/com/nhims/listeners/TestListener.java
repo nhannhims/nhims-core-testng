@@ -1,6 +1,5 @@
 package com.nhims.listeners;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -15,7 +14,6 @@ import com.nhims.utils.RecordVideo;
 
 public class TestListener implements ITestListener {
 	private String os = System.getProperty("os.name").toLowerCase();
-	private static WebDriver driver = null;
 
 	public String getTestName(ITestResult result) {
 		return result.getTestName();
@@ -35,29 +33,21 @@ public class TestListener implements ITestListener {
 
 	@Override
 	public void onStart(ITestContext context) {
-		if (HFile.getConfig(ConfigFile.driver).equals(DriverLoad.Chrome.toString())) {
-			DriverController.instance.startChromeDriver();
-			driver = DriverController.instance.driver;
-			Logger.Info("### [START][CHROME] Load Driver");
-			Logger.Info(" ");
-		}
+		Logger.Info("### [START] Suite Context: " + context.getName());
 	}
 
 	@Override
 	public void onFinish(ITestContext context) {
-		try {
-			driver.quit();
-			Logger.Info("### [END][ALL] Stop Driver");
-		} catch (Exception e) {
-			// TODO: handle exception
-			Logger.Error("Can not handle quit driver");
-			throw new RuntimeException(e.getMessage());
-		}
+		Logger.Info("### [END] Suite Context: " + context.getName());
 	}
 
 	@Override
 	public void onTestStart(ITestResult result) {
 		Logger.Info("*[TEST][START][" + getMethodName(result) + "] " + getTestDescription(result));
+		if (HFile.getConfig(ConfigFile.driver).equals(DriverLoad.Chrome.toString())) {
+			DriverController.instance.startChromeDriver();
+			Logger.Info("### [START][CHROME] Load Driver");
+		}
 		if (HFile.getConfig(ConfigFile.video).equals("true") && !os.contains("mac os")) {
 			RecordVideo.StartRecord(getMethodName(result));
 		}
@@ -73,6 +63,12 @@ public class TestListener implements ITestListener {
 		}
 		Logger.Info("*[TEST][END][PASSED][" + getMethodName(result) + "] " + getTestDescription(result));
 		Logger.Info(" ");
+		try {
+			DriverController.instance.stopDriver();
+			Logger.Info("### [END] Stop Driver");
+		} catch (Exception e) {
+			Logger.Error("Can not handle quit driver: " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -85,10 +81,23 @@ public class TestListener implements ITestListener {
 		}
 		Logger.Info("*[TEST][END][FAILED][" + getMethodName(result) + "] " + getTestDescription(result));
 		Logger.Info(" ");
+		try {
+			DriverController.instance.stopDriver();
+			Logger.Info("### [END] Stop Driver");
+		} catch (Exception e) {
+			Logger.Error("Can not handle quit driver: " + e.getMessage());
+		}
 	}
 
 	@Override
 	public void onTestSkipped(ITestResult result) {
-
+		Logger.Info("*[TEST][END][SKIPPED][" + getMethodName(result) + "] " + getTestDescription(result));
+		try {
+			DriverController.instance.stopDriver();
+			Logger.Info("### [END] Stop Driver");
+		} catch (Exception e) {
+			Logger.Error("Can not handle quit driver: " + e.getMessage());
+		}
 	}
 }
+

@@ -19,9 +19,7 @@ public class BaseControl extends Browsers {
 				throw new RuntimeException(e.getMessage());
 			}
 
-		}
-
-		if (xpathOrCssSeletor.startsWith(".") || xpathOrCssSeletor.startsWith("[a-zA-Z]+")) {
+		} else {
 			try {
 				element = browser().findElement(By.cssSelector(xpathOrCssSeletor));
 			} catch (Exception e) {
@@ -37,9 +35,7 @@ public class BaseControl extends Browsers {
 		int count = 0;
 		if (xpathOrCssSeletor.startsWith("/") || xpathOrCssSeletor.startsWith("(")) {
 			count = browser().findElements(By.xpath(xpathOrCssSeletor)).size();
-		}
-
-		if (xpathOrCssSeletor.startsWith(".") || xpathOrCssSeletor.startsWith("[a-zA-Z]+")) {
+		} else {
 			count = browser().findElements(By.cssSelector(xpathOrCssSeletor)).size();
 		}
 		return count;

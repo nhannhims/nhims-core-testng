@@ -37,11 +37,17 @@ public class Control extends BaseControl {
 		}
 		this.timeout = timeout;
 	}
+	private Control(String xpathOrCssSelector, String iframe, String timeout, WebElement element) {
+		this.xpathOrCssSelector = xpathOrCssSelector;
+		this.iframe = iframe;
+		this.timeout = timeout;
+		this.element = element;
+	}
 
 	public Control setDynamicLocator(Object... values) {
 		Logger.Info("(Set Dynamic Value) >> " + xpathOrCssSelector);
-		this.xpathOrCssSelector = HString.replace(this.xpathOrCssSelector, values);
-		return this;
+		String formattedSelector = HString.replace(this.xpathOrCssSelector, values);
+		return new Control(formattedSelector, this.iframe, this.timeout, this.element);
 	}
 
 	public String getLocator() {

@@ -183,7 +183,7 @@ public class FeatureTest {
 1. **Always add** `@Listeners(TestListener.class)` at class level
 2. **Always add** `@Story("Feature Name")` at class level
 3. **Every @Test method** must have: `testName`, `description`, `@Description`, `@Severity`
-4. **Every step** must be logged with `Logger.info("N. Description")` where N is the step number
+4. **Every step** must be logged with `Logger.info("N. Description")` where N is the step number. Do NOT add redundant `// Step N: description` comments above `Logger.info()` calls.
 5. **Assertions** use TestNG `Assert.assertTrue()` / `Assert.assertEquals()` with descriptive failure messages
 6. **Data generation**: Use `HDate.formatDate("yyyyMMddHHmmss")` for unique timestamps
 7. **Navigation**: Always use `HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl)` — never hardcode URLs
@@ -588,7 +588,7 @@ When generating test scripts, reuse these existing page methods. Only create new
 
 - [ ] Test class has `@Listeners(TestListener.class)` and `@Story`
 - [ ] Test method has `testName`, `description`, `@Description`, `@Severity`
-- [ ] Every step has `Logger.info("N. Step description")`
+- [ ] Every step has `Logger.info("N. Step description")` (no redundant `// Step N:` comments above them)
 - [ ] Navigation uses `HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl)`
 - [ ] URLs are never hardcoded — use config or `APIConst`
 - [ ] Account creation tracked for cleanup with `@AfterMethod(alwaysRun = true)`

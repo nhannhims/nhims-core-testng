@@ -32,10 +32,10 @@ import io.qameta.allure.Story;
 @Story("User Management")
 public class RegisterTest {
 
-	/** Tracks created account email for cleanup via API if test fails. */
-	private String createdEmail;
-	/** Tracks created account password for cleanup via API if test fails. */
-	private String createdPassword;
+	/** Tracks created account email for cleanup via API if test fails (thread-safe for parallel execution). */
+	private final ThreadLocal<String> createdEmail = new ThreadLocal<>();
+	/** Tracks created account password for cleanup via API if test fails (thread-safe for parallel execution). */
+	private final ThreadLocal<String> createdPassword = new ThreadLocal<>();
 
 	/**
 	 * Cleanup method that runs after every test (even on failure).
@@ -43,11 +43,13 @@ public class RegisterTest {
 	 */
 	@AfterMethod(alwaysRun = true)
 	public void cleanupAccount() {
-		if (createdEmail != null && createdPassword != null) {
-			Logger.info("Cleanup: Attempting to delete account via API for email: " + createdEmail);
-			AccountAPI.deleteAccount(createdEmail, createdPassword);
-			createdEmail = null;
-			createdPassword = null;
+		String email = createdEmail.get();
+		String password = createdPassword.get();
+		if (email != null && password != null) {
+			Logger.info("Cleanup: Attempting to delete account via API for email: " + email);
+			AccountAPI.deleteAccount(email, password);
+			createdEmail.remove();
+			createdPassword.remove();
 		}
 	}
 
@@ -62,8 +64,8 @@ public class RegisterTest {
 		// Get default test data from UserAccount model
 		UserAccount user = UserAccount.getDefaultUser();
 
-		// Generate dynamic test data for unique registration
-		String timestamp = HDate.formatDate("yyyyMMddHHmmss");
+		// Generate dynamic test data with unique timestamp (thread-safe for parallel execution)
+		String timestamp = HDate.uniqueTimestamp();
 		String username = "TestUser_" + timestamp;
 		String email = "testuser_" + timestamp + "@gmail.com";
 
@@ -126,8 +128,8 @@ public class RegisterTest {
 		RegisterPage.clickCreateAccount();
 
 		// Track created account for cleanup via API if test fails afterward
-		createdEmail = email;
-		createdPassword = user.getPassword();
+		createdEmail.set(email);
+		createdPassword.set(user.getPassword());
 
 		Logger.info("13. Verify that 'ACCOUNT CREATED!' is visible");
 		Assert.assertTrue(AccountCreatedPage.isAccountCreatedVisible(), "'ACCOUNT CREATED!' page is not visible!");
@@ -162,8 +164,8 @@ public class RegisterTest {
 		AccountDeletedPage.clickContinue();
 
 		// Account already deleted via UI, clear tracking to avoid double delete
-		createdEmail = null;
-		createdPassword = null;
+		createdEmail.remove();
+		createdPassword.remove();
 	}
 
 	/**
@@ -177,8 +179,8 @@ public class RegisterTest {
 		// Get default test data from UserAccount model
 		UserAccount user = UserAccount.getDefaultUser();
 
-		// Generate dynamic test data for unique registration
-		String timestamp = HDate.formatDate("yyyyMMddHHmmss");
+		// Generate dynamic test data with unique timestamp (thread-safe for parallel execution)
+		String timestamp = HDate.uniqueTimestamp();
 		String username = "TestUser_" + timestamp;
 		String email = "testuser_" + timestamp + "@gmail.com";
 
@@ -189,8 +191,8 @@ public class RegisterTest {
 		Assert.assertTrue(AccountAPI.createAccount(user), "Failed to create user account via API!");
 
 		// Track created account for cleanup via API if test fails afterward
-		createdEmail = email;
-		createdPassword = user.getPassword();
+		createdEmail.set(email);
+		createdPassword.set(user.getPassword());
 
 		Logger.info("1. Navigate to url");
 		Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));

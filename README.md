@@ -41,16 +41,20 @@ nhims-core-testng/
     │   ├── pages/          # Page Objects
     │   │   ├── components/ # Reusable UI components (NotificationComponent)
     │   │   └── *.java      # Page classes: BasePage, HomePage, SignupLoginPage, etc.
-    │   └── scripts/        # Test scripts: RegisterTest
+    │   └── scripts/        # Test scripts: RegisterTest, LoginTest
     └── resources/settings/
         ├── configs.properties     # Core configuration (driver, environment, video, capture, retry...)
         ├── staging.properties     # Staging Environment URLs (applicationUrl, apiBaseUrl)
         ├── production.properties  # Production Environment URL
         └── nightlight.properties  # Nightlight Environment URL
 ├── .kilo/
-│   └── agent/
-│       └── test-generation-guide.md   # AI prompt guide for generating test scripts
+│   ├── agent/
+│   │   └── test-generation-guide.md      # AI agent guide for generating test scripts
+│   └── command/
+│       └── local-review-uncommitted.md   # AI code review command with checklist
 ├── testng.xml                 # Test Suite Configuration (parallel, thread-count)
+├── testng-smoke.xml           # Smoke Test Suite (sequential)
+├── testng-regression.xml      # Regression Test Suite (parallel)
 ├── pom.xml                    # Maven dependencies & plugins
 └── README.md
 ```
@@ -265,7 +269,7 @@ public class MyNewPage extends BasePage {
 | Page Class | Key Methods |
 |---|---|
 | `HomePage` | `isHomePageVisible()`, `clickSignupLogin()`, `clickDeleteAccount()`, `getLoggedInUserText()` |
-| `SignupLoginPage` | `isNewUserSignupVisible()`, `getNewUserSignupText()`, `enterSignupNameAndEmail(name, email)`, `clickSignup()` |
+| `SignupLoginPage` | `isNewUserSignupVisible()`, `getNewUserSignupText()`, `enterSignupNameAndEmail(name, email)`, `clickSignup()`, `isSignupErrorVisible()`, `getSignupErrorText()`, `isLoginToYourAccountVisible()`, `getLoginToYourAccountText()`, `enterLoginEmailAndPassword(email, password)`, `clickLogin()`, `isLoginErrorVisible()`, `getLoginErrorText()` |
 | `RegisterPage` | `isEnterAccountInfoVisible()`, `getEnterAccountInfoText()`, `getPrefilledName()`, `getPrefilledEmail()`, `fillAccountDetails(...)`, `selectNewsletter()`, `selectSpecialOffers()`, `fillAddressDetails(...)`, `clickCreateAccount()` |
 | `AccountCreatedPage` | `isAccountCreatedVisible()`, `getAccountCreatedText()`, `clickContinue()` |
 | `AccountDeletedPage` | `isAccountDeletedVisible()`, `getAccountDeletedText()`, `clickContinue()` |
@@ -284,11 +288,22 @@ public class MyNewPage extends BasePage {
 
 ---
 
-## AI-Assisted Test Script Generation
+## AI-Assisted Workflow
 
-This project includes a detailed AI generation guide at `.kilo/agent/test-generation-guide.md` that enables AI tools (like Kilo, ChatGPT, Claude) to generate test scripts that perfectly match the project's architecture and coding conventions.
+This project integrates with AI tools (Kilo, ChatGPT, Claude) through two mechanisms:
 
-### How to Use
+1. **Test Script Generation** — `.kilo/agent/test-generation-guide.md` provides the AI with exact coding conventions
+2. **Code Review Checklist** — `.kilo/command/local-review-uncommitted.md` defines a structured review checklist
+
+### Available AI Commands
+
+| Command | File | Description |
+|:---|:---|:---|
+| `/local-review-uncommitted` | `.kilo/command/local-review-uncommitted.md` | Review uncommitted changes against 29-item project checklist |
+
+---
+
+### Generating Test Scripts
 
 When you want AI to generate a new test script from a test case, use the following prompt template:
 
@@ -307,9 +322,9 @@ Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test script cho
 2. [Expected result 2]
 ```
 
-### Prompt Examples
+#### Prompt Examples
 
-#### Example 1: Tạo test script đơn giản
+##### Example 1: Tạo test script đơn giản
 
 ```
 Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test script cho test case sau:
@@ -333,7 +348,7 @@ Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test script cho
 - User logged in successfully
 ```
 
-#### Example 2: Tạo test script có prepare data qua API
+##### Example 2: Tạo test script có prepare data qua API
 
 ```
 Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test script cho test case sau:
@@ -355,13 +370,14 @@ Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test script cho
 - Error message displayed for wrong credentials
 ```
 
-#### Example 3: Tạo test script + page object mới
+##### Example 3: Tạo test script + page object mới
 
 ```
 Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test script VÀ page object cho test case sau:
 
 **Test Case ID:** TC0005
 **Test Case Name:** Register User with existing email
+**Precondition:** Create a user account via API before test
 **Test Steps:**
 1. Launch browser
 2. Navigate to url 'http://automationexercise.com'
@@ -372,10 +388,10 @@ Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test script VÀ
 7. Click 'Signup' button
 8. Verify error 'Email Address already exist!' is visible
 
-**Notes:** Tạo thêm LoginPage nếu chưa có, thêm method getSignupErrorMessage() vào SignupLoginPage
+**Notes:** Thêm method isSignupErrorVisible() và getSignupErrorText() vào SignupLoginPage
 ```
 
-#### Example 4: Tạo nhiều test case cùng lúc
+##### Example 4: Tạo nhiều test case cùng lúc
 
 ```
 Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test scripts cho các test cases sau, gộp chung vào 1 class nếu cùng feature:
@@ -400,6 +416,51 @@ Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test scripts ch
 - Verify error message is displayed
 ```
 
+---
+
+### Reviewing Code Changes
+
+After generating code, always run the review command to ensure quality:
+
+```
+/local-review-uncommitted
+```
+
+This command walks through a **29-item checklist** organized into 6 categories:
+
+| Category | Items | What It Checks |
+|:---|:---:|:---|
+| **A. Structural & Architectural** | 5 | File placement, naming, suite XML, import order, Javadoc |
+| **B. Test Script** | 12 | Annotations, logging, assertions, cleanup, preconditions, consistency |
+| **C. Page Object** | 11 | Base class, static members, locator conventions, method patterns |
+| **D. Data Model** | 5 | POJO pattern, factory method, API support |
+| **E. API Utility** | 7 | Static methods, config-based URL, response code extraction |
+| **F. Cross-Cutting** | 4 | Pattern consistency, security, thread safety, redundancy |
+| **User Custom (U)** | ∞ | Your own project-specific checks |
+
+#### Adding Custom Review Checks
+
+Open `.kilo/command/local-review-uncommitted.md` and add your items in the **User Custom Checks** section:
+
+```markdown
+- [ ] **U1. No Vietnamese in assertions**: All assertion messages must be in English
+- [ ] **U2. Screenshot on failure**: Every test must capture screenshot on failure
+- [ ] **U3. No Thread.sleep**: Use explicit waits only, no hardcoded sleeps
+```
+
+The AI agent will include these custom items in every review alongside the built-in checks.
+
+#### Review Output Example
+
+The command produces a structured report with:
+- **Summary** — What changed and overall assessment
+- **Issues Found** — Table of findings by severity (CRITICAL / WARNING / SUGGESTION)
+- **Checklist Results** — PASS/FAIL/SKIP for each checked item
+- **Detailed Findings** — Line-by-line analysis with fix suggestions
+- **Recommendation** — APPROVE / APPROVE WITH SUGGESTIONS / NEEDS CHANGES
+
+---
+
 ### Tips for Best Results
 
 1. **Always reference the guide file** — Start every prompt with `Dựa vào file .kilo/agent/test-generation-guide.md`
@@ -407,7 +468,20 @@ Dựa vào file .kilo/agent/test-generation-guide.md, hãy tạo test scripts ch
 3. **Mention prerequisites** — If a test needs a pre-created user, mention `Precondition: Create a user account via API before test` so AI includes `AccountAPI.createAccount()` in the setup and `@AfterMethod` cleanup
 4. **Specify new pages needed** — If the test navigates to a page not in the existing page objects, mention it explicitly
 5. **Keep test cases focused** — One test case per `@Test` method; AI will group related tests in the same class with shared `@Story`
-6. **Use Vietnamese or English** — The AI understands both, but test case steps in English produce more consistent code
+6. **Always review after generating** — Run `/local-review-uncommitted` after code generation to catch inconsistencies
+7. **Use Vietnamese or English** — The AI understands both, but test case steps in English produce more consistent code
+
+---
+
+## Existing Test Cases
+
+| Test Class | Test Method | TC ID | Description |
+|:---|:---|:---|:---|
+| `RegisterTest` | `testRegisterUser` | TC0001 | Full registration flow: signup → fill form → verify → delete |
+| `RegisterTest` | `testRegisterUserWithExistingEmail` | TC0005 | Verify error when registering with an already registered email |
+| `LoginTest` | `testLoginUserWithCorrectCredentials` | TC0002 | Login with valid credentials → verify → delete account |
+| `LoginTest` | `testLoginUserWithIncorrectCredentials` | TC0003 | Verify error message with wrong credentials |
+| `LoginTest` | `testLogoutUser` | TC0004 | Login → logout → verify redirect to login page |
 
 ---
 

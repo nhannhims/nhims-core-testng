@@ -15,6 +15,7 @@
     <test name="Regression Tests">
         <classes>
             <class name="com.nhims.scripts.RegisterTest"/>
+            <class name="com.nhims.scripts.LoginTest"/>
         </classes>
     </test>
 

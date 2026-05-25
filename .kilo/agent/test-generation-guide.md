@@ -126,10 +126,10 @@ import io.qameta.allure.Story;
 @Story("Feature Name")
 public class FeatureTest {
 
-	/** Tracks created account email for cleanup via API if test fails. */
-	private String createdEmail;
-	/** Tracks created account password for cleanup via API if test fails. */
-	private String createdPassword;
+	/** Tracks created account email for cleanup via API if test fails (thread-safe for parallel execution). */
+	private final ThreadLocal<String> createdEmail = new ThreadLocal<>();
+	/** Tracks created account password for cleanup via API if test fails (thread-safe for parallel execution). */
+	private final ThreadLocal<String> createdPassword = new ThreadLocal<>();
 
 	/**
 	 * Cleanup method that runs after every test (even on failure).
@@ -137,11 +137,13 @@ public class FeatureTest {
 	 */
 	@AfterMethod(alwaysRun = true)
 	public void cleanupAccount() {
-		if (createdEmail != null && createdPassword != null) {
-			Logger.info("Cleanup: Attempting to delete account via API for email: " + createdEmail);
-			AccountAPI.deleteAccount(createdEmail, createdPassword);
-			createdEmail = null;
-			createdPassword = null;
+		String email = createdEmail.get();
+		String password = createdPassword.get();
+		if (email != null && password != null) {
+			Logger.info("Cleanup: Attempting to delete account via API for email: " + email);
+			AccountAPI.deleteAccount(email, password);
+			createdEmail.remove();
+			createdPassword.remove();
 		}
 	}
 
@@ -151,7 +153,7 @@ public class FeatureTest {
 	public void testMethodName() {
 		// Get test data
 		UserAccount user = UserAccount.getDefaultUser();
-		String timestamp = HDate.formatDate("yyyyMMddHHmmss");
+		String timestamp = HDate.uniqueTimestamp();
 		String username = "TestUser_" + timestamp;
 		String email = "testuser_" + timestamp + "@gmail.com";
 
@@ -166,14 +168,14 @@ public class FeatureTest {
 		// ... more steps ...
 
 		// Track account for cleanup (set AFTER account creation succeeds)
-		createdEmail = email;
-		createdPassword = user.getPassword();
+		createdEmail.set(email);
+		createdPassword.set(user.getPassword());
 
 		// ... more steps ...
 
 		// Clear tracking after successful delete via UI
-		createdEmail = null;
-		createdPassword = null;
+		createdEmail.remove();
+		createdPassword.remove();
 	}
 }
 ```
@@ -185,10 +187,10 @@ public class FeatureTest {
 3. **Every @Test method** must have: `testName`, `description`, `@Description`, `@Severity`
 4. **Every step** must be logged with `Logger.info("N. Description")` where N is the step number. Do NOT add redundant `// Step N: description` comments above `Logger.info()` calls.
 5. **Assertions** use TestNG `Assert.assertTrue()` / `Assert.assertEquals()` with descriptive failure messages
-6. **Data generation**: Use `HDate.formatDate("yyyyMMddHHmmss")` for unique timestamps
+6. **Data generation**: Use `HDate.uniqueTimestamp()` for unique timestamps (thread-safe for parallel execution). NEVER use `HDate.formatDate("yyyyMMddHHmmss")` — it only has second-level precision and will cause email collisions when tests run in parallel.
 7. **Navigation**: Always use `HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl)` — never hardcode URLs
 8. **Cleanup**: If test creates an account, use `@AfterMethod(alwaysRun = true)` with `AccountAPI.deleteAccount()`
-9. **Account tracking**: Set `createdEmail`/`createdPassword` immediately after account creation, clear to `null` after successful UI delete
+9. **Account tracking**: Use `ThreadLocal<String>` for `createdEmail`/`createdPassword` (NOT plain `String`). Set with `.set()` after account creation, clear with `.remove()` after successful UI delete. This is MANDATORY because TestNG `parallel="methods"` creates a single test class instance shared across concurrent threads — plain fields cause race conditions in `@AfterMethod` cleanup.
 10. **Google vignette bypass**: After clicking Continue on result pages, check for vignette redirect:
     ```java
     String currentUrl = Navigation.getCurrentUrl();
@@ -592,7 +594,8 @@ When generating test scripts, reuse these existing page methods. Only create new
 - [ ] Navigation uses `HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl)`
 - [ ] URLs are never hardcoded — use config or `APIConst`
 - [ ] Account creation tracked for cleanup with `@AfterMethod(alwaysRun = true)`
-- [ ] `createdEmail`/`createdPassword` set after creation, cleared after successful UI delete
+- [ ] `createdEmail`/`createdPassword` are `ThreadLocal<String>` (NOT plain `String`), set with `.set()` after creation, cleared with `.remove()` after successful UI delete
+- [ ] Dynamic data uses `HDate.uniqueTimestamp()` (NOT `HDate.formatDate("yyyyMMddHHmmss")`) to prevent email collisions in parallel execution
 - [ ] Page methods are `static`, have `@Step` and `Logger.info()`
 - [ ] Get-text methods guard with `isVisible()` check
 - [ ] API methods parse `responseCode` from JSON body, not HTTP status

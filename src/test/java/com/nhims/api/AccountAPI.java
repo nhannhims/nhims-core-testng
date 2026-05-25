@@ -16,6 +16,10 @@ import com.nhims.data.UserAccount;
 import com.nhims.utils.HFile;
 import com.nhims.utils.Logger;
 
+/**
+ * API utility for user account operations.
+ * Provides methods for creating and deleting user accounts via the AutomationExercise API.
+ */
 public class AccountAPI {
 
 	private static final String BASE_URL = HFile.getConfigEnvironment(EnvironmentConfig.apiBaseUrl);

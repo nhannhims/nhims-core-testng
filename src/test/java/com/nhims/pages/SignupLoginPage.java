@@ -21,6 +21,8 @@ public class SignupLoginPage extends BasePage {
 	private static final Control btnLogin = new Control("button[data-qa='login-button']");
 	private static final Control lblLoginError = new Control(
 			"//div[contains(@class,'login-form')]//p[contains(text(),'Your email or password is incorrect!')]");
+	private static final Control lblSignupError = new Control(
+			"//div[contains(@class,'signup-form')]//p[contains(text(),'Email Address already exist!')]");
 
 	// --- Signup form methods ---
 
@@ -69,6 +71,31 @@ public class SignupLoginPage extends BasePage {
 	public static void clickSignup() {
 		Logger.info("Click 'Signup' button");
 		btnSignup.get().click();
+	}
+
+	/**
+	 * Checks if the signup error message is visible on the page.
+	 *
+	 * @return true if the signup error message is displayed
+	 */
+	@Step("Check if signup error message is visible")
+	public static boolean isSignupErrorVisible() {
+		Logger.info("Check if signup error message is visible");
+		return lblSignupError.isVisible();
+	}
+
+	/**
+	 * Gets the signup error message text.
+	 *
+	 * @return the error message text, or empty string if not visible
+	 */
+	@Step("Get the signup error message text")
+	public static String getSignupErrorText() {
+		Logger.info("Get signup error message text");
+		if (lblSignupError.isVisible()) {
+			return lblSignupError.get().getText();
+		}
+		return "";
 	}
 
 	// --- Login form methods ---

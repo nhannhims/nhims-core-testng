@@ -165,4 +165,61 @@ public class RegisterTest {
 		createdEmail = null;
 		createdPassword = null;
 	}
+
+	/**
+	 * TC0005: Register User with existing email.
+	 * Verifies that an error message is displayed when trying to register with an already registered email.
+	 */
+	@Test(testName = "TC0005", description = "Test Case 5: Register User with existing email")
+	@Description("Verify error 'Email Address already exist!' is visible when registering with an already registered email")
+	@Severity(SeverityLevel.CRITICAL)
+	public void testRegisterUserWithExistingEmail() {
+		// Get default test data from UserAccount model
+		UserAccount user = UserAccount.getDefaultUser();
+
+		// Generate dynamic test data for unique registration
+		String timestamp = HDate.formatDate("yyyyMMddHHmmss");
+		String username = "TestUser_" + timestamp;
+		String email = "testuser_" + timestamp + "@gmail.com";
+
+		// Precondition: Create a user account via API before test
+		Logger.info("Precondition: Create a user account via API");
+		user.setName(username);
+		user.setEmail(email);
+		Assert.assertTrue(AccountAPI.createAccount(user), "Failed to create user account via API!");
+
+		// Track created account for cleanup via API if test fails afterward
+		createdEmail = email;
+		createdPassword = user.getPassword();
+
+		Logger.info("1. Navigate to url");
+		Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
+
+		Logger.info("2. Verify that home page is visible successfully");
+		Assert.assertTrue(HomePage.isHomePageVisible(), "Home page is not visible!");
+
+		Logger.info("3. Click on 'Signup / Login' button");
+		HomePage.clickSignupLogin();
+
+		Logger.info("4. Verify 'New User Signup!' is visible");
+		Assert.assertTrue(SignupLoginPage.isNewUserSignupVisible(), "'New User Signup!' title is not visible!");
+		String signupTitleText = SignupLoginPage.getNewUserSignupText();
+		Assert.assertEquals(signupTitleText.toLowerCase(), "new user signup!",
+				"Expected signup title text 'New User Signup!' but got: " + signupTitleText);
+
+		Logger.info("5. Enter name and already registered email address");
+		SignupLoginPage.enterSignupNameAndEmail(username, email);
+
+		Logger.info("6. Click 'Signup' button");
+		SignupLoginPage.clickSignup();
+
+		Logger.info("7. Verify error 'Email Address already exist!' is visible");
+		Assert.assertTrue(SignupLoginPage.isSignupErrorVisible(),
+				"Signup error message 'Email Address already exist!' is not visible!");
+		String errorText = SignupLoginPage.getSignupErrorText();
+		Assert.assertEquals(errorText.toLowerCase(), "email address already exist!",
+				"Expected error message 'Email Address already exist!' but got: " + errorText);
+
+		// Account still exists, cleanup will be handled by @AfterMethod
+	}
 }

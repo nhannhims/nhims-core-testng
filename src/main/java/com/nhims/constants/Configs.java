@@ -19,10 +19,12 @@ public class Configs {
 		report,
 		capture,
 		video,
-		logger
+		logger,
+		maxRetry
 	}
 	
 	public static enum EnvironmentConfig {
-		applicationUrl
+		applicationUrl,
+		apiBaseUrl
 	}
 }

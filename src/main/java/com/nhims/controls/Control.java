@@ -3,6 +3,7 @@ package com.nhims.controls;
 import java.time.Duration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -65,32 +66,44 @@ public class Control extends BaseControl {
 	}
 
 	/**
-	 * Finds the element on the page, switches to iframe if specified, and waits for visibility.
-	 * Also focuses the found element.
+	 * Finds the element on the page, switching to iframe if specified, and waiting for visibility.
+	 * Includes retry mechanism for StaleElementReferenceException and transient DOM changes.
 	 *
 	 * @return the located WebElement
 	 */
 	private WebElement find() {
-		Logger.info("(Find Element) >> " + xpathOrCssSelector);
-		int sec = (timeout == null) ? TimeConst.SEC_NORMAL_WAIT : Convert.stringToInt(timeout);
-		WebDriverWait wait = new WebDriverWait(Browsers.browser(), Duration.ofSeconds(sec));
+		int attempt = 0;
+		while (true) {
+			try {
+				Logger.info("(Find Element) >> " + xpathOrCssSelector);
+				int sec = (timeout == null) ? TimeConst.SEC_NORMAL_WAIT : Convert.stringToInt(timeout);
+				WebDriverWait wait = new WebDriverWait(Browsers.browser(), Duration.ofSeconds(sec));
 
-		if (iframe != null) {
-			By frameLocator = iframe.startsWith("/") || iframe.startsWith("(") 
-					? By.xpath(iframe) 
-					: By.cssSelector(iframe);
-			wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frameLocator));
-		} else {
-			Browsers.browser().switchTo().defaultContent();
+				if (iframe != null) {
+					By frameLocator = iframe.startsWith("/") || iframe.startsWith("(")
+							? By.xpath(iframe)
+							: By.cssSelector(iframe);
+					wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(frameLocator));
+				} else {
+					Browsers.browser().switchTo().defaultContent();
+				}
+
+				By elementLocator = xpathOrCssSelector.startsWith("/") || xpathOrCssSelector.startsWith("(")
+						? By.xpath(xpathOrCssSelector)
+						: By.cssSelector(xpathOrCssSelector);
+
+				WebElement el = wait.until(ExpectedConditions.visibilityOfElementLocated(elementLocator));
+				focus(el);
+				return el;
+			} catch (StaleElementReferenceException e) {
+				attempt++;
+				if (attempt > TimeConst.MAX_RETRY) {
+					Logger.error("(Retry Exhausted) StaleElementReferenceException for: " + xpathOrCssSelector);
+					throw e;
+				}
+				Logger.warning("(Retry " + attempt + "/" + TimeConst.MAX_RETRY + ") StaleElementReferenceException >> " + xpathOrCssSelector);
+			}
 		}
-
-		By elementLocator = xpathOrCssSelector.startsWith("/") || xpathOrCssSelector.startsWith("(")
-				? By.xpath(xpathOrCssSelector)
-				: By.cssSelector(xpathOrCssSelector);
-
-		WebElement el = wait.until(ExpectedConditions.visibilityOfElementLocated(elementLocator));
-		focus(el);
-		return el;
 	}
 
 	/**
@@ -100,7 +113,16 @@ public class Control extends BaseControl {
 	 */
 	public Actions get() {
 		WebElement el = find();
-		return new Actions(el);
+		return new Actions(el, this);
+	}
+
+	/**
+	 * Re-finds the element (used internally by Actions for retry on stale element).
+	 *
+	 * @return the re-located WebElement
+	 */
+	WebElement reFind() {
+		return find();
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
@@ -12,19 +13,23 @@ import com.nhims.browsers.Browsers;
 import com.nhims.browsers.BrowserExtensions;
 import com.nhims.browsers.Navigation;
 import com.nhims.constants.JavaScript;
+import com.nhims.constants.TimeConst;
 import com.nhims.utils.Convert;
 import com.nhims.utils.Logger;
 
 public class Actions {
 	private WebElement element;
+	private Control control;
 
 	/**
-	 * Constructor to initialize Actions wrapper with a WebElement.
+	 * Constructor to initialize Actions wrapper with a WebElement and its Control owner.
 	 *
-	 * @param element the WebElement to perform actions on
+	 * @param element  the WebElement to perform actions on
+	 * @param control  the Control that created this Actions (for retry re-find)
 	 */
-	public Actions(WebElement element) {
+	Actions(WebElement element, Control control) {
 		this.element = element;
+		this.control = control;
 	}
 
 	/**
@@ -37,24 +42,52 @@ public class Actions {
 	}
 
 	/**
+	 * Re-executes the given action, re-finding the element on StaleElementReferenceException.
+	 *
+	 * @param action the action to execute
+	 */
+	private void withRetry(Runnable action) {
+		int attempt = 0;
+		while (true) {
+			try {
+				action.run();
+				return;
+			} catch (StaleElementReferenceException e) {
+				attempt++;
+				if (attempt > TimeConst.MAX_RETRY) {
+					Logger.error("(Retry Exhausted) StaleElementReferenceException during action on: " + control.getLocator());
+					throw e;
+				}
+				Logger.warning("(Retry " + attempt + "/" + TimeConst.MAX_RETRY + ") StaleElementReferenceException during action >> " + control.getLocator());
+				this.element = control.reFind();
+			}
+		}
+	}
+
+	/**
 	 * Performs a click action on the element. Fallbacks to JavaScript click if standard click fails.
 	 */
 	public void click() {
-		String url = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
-		try {
-			element.click();
-			Logger.info("> E > Click");
-			String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
-			if (!url.equals(current)) {
-				BrowserExtensions.waitPageLoading();
+		withRetry(() -> {
+			String url = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
+			try {
+				element.click();
+				Logger.info("> E > Click");
+				String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
+				if (!url.equals(current)) {
+					BrowserExtensions.waitPageLoading();
+				}
+			} catch (Exception e) {
+				if (e instanceof StaleElementReferenceException) {
+					throw e;
+				}
+				clickByJS();
+				String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
+				if (!url.equals(current)) {
+					BrowserExtensions.waitPageLoading();
+				}
 			}
-		} catch (Exception e) {
-			clickByJS();
-			String current = Convert.formatStringToUTF8(Navigation.getCurrentUrl());
-			if (!url.equals(current)) {
-				BrowserExtensions.waitPageLoading();
-			}
-		}
+		});
 	}
 
 	/**
@@ -69,16 +102,20 @@ public class Actions {
 	 * Performs a right click (context click) on the element.
 	 */
 	public void rightClick() {
-		useAction().contextClick(element).perform();
-		Logger.info("> E > Right Click");
+		withRetry(() -> {
+			useAction().contextClick(element).perform();
+			Logger.info("> E > Right Click");
+		});
 	}
 
 	/**
 	 * Performs a double click on the element.
 	 */
 	public void doubleClick() {
-		useAction().doubleClick(element).perform();
-		Logger.info("> E > Double Click");
+		withRetry(() -> {
+			useAction().doubleClick(element).perform();
+			Logger.info("> E > Double Click");
+		});
 	}
 
 	/**
@@ -88,10 +125,12 @@ public class Actions {
 	 * @return this Actions instance for chaining
 	 */
 	public Actions type(String text) {
-		element.sendKeys(Keys.END);
-		element.sendKeys(Keys.SHIFT, Keys.HOME);
-		element.sendKeys(text);
-		Logger.info("> E > Input text [" + text + "]");
+		withRetry(() -> {
+			element.sendKeys(Keys.END);
+			element.sendKeys(Keys.SHIFT, Keys.HOME);
+			element.sendKeys(text);
+			Logger.info("> E > Input text [" + text + "]");
+		});
 		return this;
 	}
 
@@ -101,8 +140,10 @@ public class Actions {
 	 * @param path the local path of the file to upload
 	 */
 	public void selectFile(String path) {
-		element.sendKeys(path);
-		Logger.info("> E > Upload file has path [" + path + "]");
+		withRetry(() -> {
+			element.sendKeys(path);
+			Logger.info("> E > Upload file has path [" + path + "]");
+		});
 	}
 
 	/**
@@ -111,15 +152,17 @@ public class Actions {
 	 * @return this Actions instance for chaining
 	 */
 	public Actions clear() {
-		element.clear();
-		if (getValue() == null || getValue().isEmpty()) {
-			element.sendKeys(Keys.END);
-			element.sendKeys(Keys.SHIFT, Keys.HOME);
-			element.sendKeys(Keys.DELETE);
-			Logger.info("> E > Clear input field by keyboard");
-		} else {
-			Logger.info("> E > Clear input field");
-		}
+		withRetry(() -> {
+			element.clear();
+			if (getValue() == null || getValue().isEmpty()) {
+				element.sendKeys(Keys.END);
+				element.sendKeys(Keys.SHIFT, Keys.HOME);
+				element.sendKeys(Keys.DELETE);
+				Logger.info("> E > Clear input field by keyboard");
+			} else {
+				Logger.info("> E > Clear input field");
+			}
+		});
 		return this;
 	}
 
@@ -137,20 +180,24 @@ public class Actions {
 	 * Checks/selects a checkbox or radio button if not already selected.
 	 */
 	public void check() {
-		if (!element.isSelected()) {
-			element.click();
-			Logger.info("> E > Check a Checkbox/Radio Button");
-		}
+		withRetry(() -> {
+			if (!element.isSelected()) {
+				element.click();
+				Logger.info("> E > Check a Checkbox/Radio Button");
+			}
+		});
 	}
 
 	/**
 	 * Unchecks/deselects a checkbox if selected.
 	 */
 	public void unCheck() {
-		if (element.isSelected()) {
-			element.click();
-			Logger.info("> E > Uncheck a Checkbox");
-		}
+		withRetry(() -> {
+			if (element.isSelected()) {
+				element.click();
+				Logger.info("> E > Uncheck a Checkbox");
+			}
+		});
 	}
 
 	/**
@@ -169,8 +216,10 @@ public class Actions {
 	 * @param optText the visible text of the option to select
 	 */
 	public void selectOptionByText(String optText) {
-		select().selectByVisibleText(optText);
-		Logger.info("> E > Select Option has text [" + optText + "]");
+		withRetry(() -> {
+			select().selectByVisibleText(optText);
+			Logger.info("> E > Select Option has text [" + optText + "]");
+		});
 	}
 
 	/**
@@ -181,14 +230,16 @@ public class Actions {
 	 */
 	@Deprecated
 	public void selectOptionText(String text) {
-		List<WebElement> options = element.findElements(By.tagName("option"));
-		for (WebElement option : options) {
-			if (option.getText().equals(text)) {
-				option.click();
-				break;
+		withRetry(() -> {
+			List<WebElement> options = element.findElements(By.tagName("option"));
+			for (WebElement option : options) {
+				if (option.getText().equals(text)) {
+					option.click();
+					break;
+				}
 			}
-		}
-		Logger.info("> E > Select Option has text [" + text + "]");
+			Logger.info("> E > Select Option has text [" + text + "]");
+		});
 	}
 
 	/**
@@ -197,8 +248,10 @@ public class Actions {
 	 * @param optText the visible text of the option to deselect
 	 */
 	public void deselectOptionByText(String optText) {
-		select().deselectByVisibleText(optText);
-		Logger.info("> E > Deselect Option has text [" + optText + "]");
+		withRetry(() -> {
+			select().deselectByVisibleText(optText);
+			Logger.info("> E > Deselect Option has text [" + optText + "]");
+		});
 	}
 
 	/**

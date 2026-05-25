@@ -34,7 +34,7 @@ nhims-core-testng/
 │       └── logback.xml    # Logging Configuration (Console + RollingFile)
 └── test/
     ├── java/com/nhims/
-    │   ├── data/          # Test Data Constants
+    │   ├── data/          # Test Data Models (e.g., UserAccount)
     │   ├── listeners/     # TestListener — lifecycle hooks (screenshot, video, driver)
     │   ├── pages/         # Page Objects: BasePage, HomePage, SignupLoginPage, RegisterPage, etc.
     │   └── scripts/       # Test scripts: RegisterTest
@@ -59,6 +59,7 @@ nhims-core-testng/
 5. **Allure Report:** Rich HTML report generation out-of-the-box via `mvn allure:report`.
 6. **Auto Screenshot & Video:** Automatically captures screenshots and records execution videos on test failures, with independent video capture per thread.
 7. **Multi-environment Support:** Pre-configured environments for Staging, Production, and Nightlight, switchable via the `environment` parameter in configurations.
+8. **Isolated Test Data Models:** Uses dedicated data model classes (such as `UserAccount` under package `com.nhims.data`) to decouple test data definitions from test scripts, ensuring clean separation of concerns and easier maintenance.
 
 ---
 

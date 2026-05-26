@@ -111,4 +111,57 @@ public class ProductsTest {
 		Assert.assertTrue(brand.toLowerCase().contains("brand"),
 				"Expected brand text to contain 'Brand' but got: " + brand);
 	}
+
+	/**
+	 * TC0009: Search Product.
+	 * Navigates to the home page, clicks the Products button,
+	 * verifies the ALL PRODUCTS page, enters a product name in the search input,
+	 * clicks search, and verifies that searched products are visible.
+	 */
+	@Test(testName = "TC0009", description = "Test Case 9: Search Product")
+	@Description("Verify that the user can search for a product and all related search results are displayed")
+	@Severity(SeverityLevel.CRITICAL)
+	public void testSearchProduct() {
+		String searchKeyword = "Top";
+
+		Logger.info("1. Navigate to url");
+		Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
+
+		// Bypass potential Google vignette ad redirect
+		String currentUrl = Navigation.getCurrentUrl();
+		if (currentUrl.contains("google_vignette") || currentUrl.contains("#google_vignette")) {
+			Logger.info("Bypassing Google vignette ad by navigating to the home page");
+			Navigation.navigateTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
+		}
+
+		Logger.info("2. Verify that home page is visible successfully");
+		Assert.assertTrue(HomePage.isHomePageVisible(), "Home page is not visible!");
+
+		Logger.info("3. Click on 'Products' button");
+		HomePage.clickProducts();
+
+		// Bypass potential Google vignette ad redirect
+		currentUrl = Navigation.getCurrentUrl();
+		if (currentUrl.contains("google_vignette") || currentUrl.contains("#google_vignette")) {
+			Logger.info("Bypassing Google vignette ad by navigating to products page");
+			Navigation.navigateTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl) + "/products");
+		}
+
+		Logger.info("4. Verify user is navigated to ALL PRODUCTS page successfully");
+		Assert.assertTrue(ProductsPage.isAllProductsPageVisible(), "ALL PRODUCTS page is not visible!");
+
+		Logger.info("5. Enter product name in search input and click search button");
+		ProductsPage.searchProduct(searchKeyword);
+
+		Logger.info("6. Verify 'SEARCHED PRODUCTS' is visible");
+		Assert.assertTrue(ProductsPage.isSearchedProductsVisible(), "'SEARCHED PRODUCTS' is not visible!");
+		String searchedProductsTitle = ProductsPage.getSearchedProductsTitleText();
+		Assert.assertTrue(searchedProductsTitle.toLowerCase().contains("searched products"),
+				"Expected title to contain 'SEARCHED PRODUCTS' but got: " + searchedProductsTitle);
+
+		Logger.info("7. Verify all the products related to search are visible");
+		Assert.assertTrue(ProductsPage.areSearchedProductsVisible(), "Searched products are not visible!");
+		Assert.assertTrue(ProductsPage.isAnySearchedProductNameContaining(searchKeyword),
+				"No searched product name contains the keyword '" + searchKeyword + "'!");
+	}
 }

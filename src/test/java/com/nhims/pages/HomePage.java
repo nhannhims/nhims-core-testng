@@ -12,6 +12,7 @@ public class HomePage extends BasePage {
 	private static final Control btnSignupLogin = new Control("a[href='/login']");
 	private static final Control btnDeleteAccount = new Control("a[href='/delete_account']");
 	private static final Control btnLogout = new Control("a[href='/logout']");
+	private static final Control btnContactUs = new Control("a[href='/contact_us']");
 	private static final Control lblLoggedInAs = new Control("//a[contains(., 'Logged in as')]");
 
 	/**
@@ -50,6 +51,15 @@ public class HomePage extends BasePage {
 	public static void clickLogout() {
 		Logger.info("Click on 'Logout' button");
 		btnLogout.get().click();
+	}
+
+	/**
+	 * Clicks the 'Contact Us' button on the home page header.
+	 */
+	@Step("Click 'Contact Us' button")
+	public static void clickContactUs() {
+		Logger.info("Click on 'Contact Us' button");
+		btnContactUs.get().click();
 	}
 
 	/**

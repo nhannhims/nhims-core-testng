@@ -3,14 +3,33 @@ package com.nhims.browsers;
 import java.util.ArrayList;
 
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.nhims.constants.JavaScript;
 import com.nhims.constants.TimeConst;
 import com.nhims.constants.Constants.LOCATION;
+import com.nhims.constants.Constants.AlertAction;
 import com.nhims.utils.Convert;
 import com.nhims.utils.Logger;
 
 public class BrowserExtensions {
+	/**
+	 * Waits for a JavaScript alert to be present and handles it (accept or dismiss).
+	 *
+	 * @param timeoutSec the maximum time to wait in seconds
+	 * @param action     the action to perform (AlertAction.ACCEPT or AlertAction.DISMISS)
+	 */
+	public static void handleAlert(int timeoutSec, AlertAction action) {
+		Browsers.waitExplicit(timeoutSec).until(ExpectedConditions.alertIsPresent());
+		if (action == AlertAction.ACCEPT) {
+			Browsers.browser().switchTo().alert().accept();
+			Logger.info("-----Accept Alert success");
+		} else {
+			Browsers.browser().switchTo().alert().dismiss();
+			Logger.info("-----Dismiss Alert success");
+		}
+	}
+
 	/**
 	 * Waits for the page to finish loading by checking the document readystate.
 	 * Times out after SEC_PAGE_LOAD_WAIT seconds if loading takes too long.

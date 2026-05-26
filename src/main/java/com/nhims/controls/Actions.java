@@ -91,6 +91,24 @@ public class Actions {
 	}
 
 	/**
+	 * Performs a simple click action on the element without checking for URL changes or page load.
+	 * Fallbacks to JavaScript click if standard click fails.
+	 */
+	public void simpleClick() {
+		withRetry(() -> {
+			try {
+				element.click();
+				Logger.info("> E > Click");
+			} catch (Exception e) {
+				if (e instanceof StaleElementReferenceException) {
+					throw e;
+				}
+				clickByJS();
+			}
+		});
+	}
+
+	/**
 	 * Performs a click action via JavaScript executor.
 	 */
 	private void clickByJS() {

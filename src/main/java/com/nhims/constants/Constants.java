@@ -5,4 +5,9 @@ public class Constants {
 		TOP,
 		BOTTOM
 	}
+
+	public static enum AlertAction {
+		ACCEPT,
+		DISMISS
+	}
 }

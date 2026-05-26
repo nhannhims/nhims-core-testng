@@ -17,6 +17,7 @@
             <class name="com.nhims.scripts.LoginTest"/>
             <class name="com.nhims.scripts.ContactUsTest"/>
             <class name="com.nhims.scripts.TestCasesTest"/>
+            <class name="com.nhims.scripts.ProductsTest"/>
         </classes>
     </test>
 

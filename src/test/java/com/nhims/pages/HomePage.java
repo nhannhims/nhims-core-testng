@@ -14,6 +14,7 @@ public class HomePage extends BasePage {
 	private static final Control btnLogout = new Control("a[href='/logout']");
 	private static final Control btnContactUs = new Control("a[href='/contact_us']");
 	private static final Control lblLoggedInAs = new Control("//a[contains(., 'Logged in as')]");
+	private static final Control btnTestCases = new Control("a[href='/test_cases']");
 
 	/**
 	 * Checks if the Home Page is visible by verifying the logo element.
@@ -74,5 +75,14 @@ public class HomePage extends BasePage {
 			return lblLoggedInAs.get().getText();
 		}
 		return "";
+	}
+
+	/**
+	 * Click 'Test Cases' button.
+	 */
+	@Step("Click 'Test Cases' button")
+	public static void clickTestCases() {
+		Logger.info("Click on 'Test Cases' button");
+		btnTestCases.get().click();
 	}
 }

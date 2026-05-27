@@ -1,6 +1,7 @@
 package com.nhims.pages;
 
 import com.nhims.controls.Control;
+import com.nhims.pages.components.SubscriptionComponent;
 import com.nhims.utils.Logger;
 import io.qameta.allure.Step;
 
@@ -16,10 +17,12 @@ public class HomePage extends BasePage {
 	private static final Control lblLoggedInAs = new Control("//a[contains(., 'Logged in as')]");
 	private static final Control btnTestCases = new Control("a[href='/test_cases']");
 	private static final Control btnProducts = new Control("a[href='/products']");
-	private static final Control lblSubscription = new Control("div.single-widget:has(#susbscribe_email) h2");
-	private static final Control txtSubscriptionEmail = new Control("#susbscribe_email");
-	private static final Control btnSubscribe = new Control("#subscribe");
-	private static final Control lblSubscribeSuccess = new Control("#success-subscribe");
+	private static final Control btnCart = new Control("a[href='/view_cart']");
+	private static final SubscriptionComponent subscription = new SubscriptionComponent(
+			"div.single-widget:has(#susbscribe_email) h2",
+			"#susbscribe_email",
+			"#subscribe",
+			"#success-subscribe");
 
 	/**
 	 * Checks if the Home Page is visible by verifying the logo element.
@@ -101,6 +104,15 @@ public class HomePage extends BasePage {
 	}
 
 	/**
+	 * Click 'Cart' button.
+	 */
+	@Step("Click 'Cart' button")
+	public static void clickCart() {
+		Logger.info("Click on 'Cart' button");
+		btnCart.get().click();
+	}
+
+	/**
 	 * Checks if the 'SUBSCRIPTION' heading is visible in the footer.
 	 *
 	 * @return true if the subscription heading is visible, false otherwise
@@ -108,7 +120,7 @@ public class HomePage extends BasePage {
 	@Step("Check if 'SUBSCRIPTION' heading is visible")
 	public static boolean isSubscriptionVisible() {
 		Logger.info("Check if 'SUBSCRIPTION' heading is visible");
-		return lblSubscription.isVisible();
+		return subscription.isSubscriptionVisible();
 	}
 
 	/**
@@ -119,10 +131,7 @@ public class HomePage extends BasePage {
 	@Step("Get the text of 'SUBSCRIPTION' heading")
 	public static String getSubscriptionText() {
 		Logger.info("Get 'SUBSCRIPTION' heading text");
-		if (lblSubscription.isVisible()) {
-			return lblSubscription.get().getText();
-		}
-		return "";
+		return subscription.getSubscriptionText();
 	}
 
 	/**
@@ -133,8 +142,7 @@ public class HomePage extends BasePage {
 	@Step("Subscribe with email: {email}")
 	public static void subscribeEmail(String email) {
 		Logger.info("Enter email and click subscribe button");
-		txtSubscriptionEmail.get().type(email);
-		btnSubscribe.get().click();
+		subscription.subscribeEmail(email);
 	}
 
 	/**
@@ -145,7 +153,7 @@ public class HomePage extends BasePage {
 	@Step("Check if subscription success message is visible")
 	public static boolean isSubscribeSuccessMessageVisible() {
 		Logger.info("Check if subscription success message is visible");
-		return lblSubscribeSuccess.isVisible();
+		return subscription.isSubscribeSuccessMessageVisible();
 	}
 
 	/**
@@ -156,9 +164,6 @@ public class HomePage extends BasePage {
 	@Step("Get the subscription success message text")
 	public static String getSubscribeSuccessMessageText() {
 		Logger.info("Get subscription success message text");
-		if (lblSubscribeSuccess.isVisible()) {
-			return lblSubscribeSuccess.get().getText();
-		}
-		return "";
+		return subscription.getSubscribeSuccessMessageText();
 	}
 }

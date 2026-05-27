@@ -268,11 +268,16 @@ public class MyNewPage extends BasePage {
 
 | Page Class | Key Methods |
 |---|---|
-| `HomePage` | `isHomePageVisible()`, `clickSignupLogin()`, `clickDeleteAccount()`, `getLoggedInUserText()` |
+| `HomePage` | `isHomePageVisible()`, `clickSignupLogin()`, `clickDeleteAccount()`, `getLoggedInUserText()`, `clickContactUs()`, `clickTestCases()`, `clickProducts()`, `clickCart()`, `isSubscriptionVisible()`, `getSubscriptionText()`, `subscribeEmail(email)`, `isSubscribeSuccessMessageVisible()`, `getSubscribeSuccessMessageText()` |
 | `SignupLoginPage` | `isNewUserSignupVisible()`, `getNewUserSignupText()`, `enterSignupNameAndEmail(name, email)`, `clickSignup()`, `isSignupErrorVisible()`, `getSignupErrorText()`, `isLoginToYourAccountVisible()`, `getLoginToYourAccountText()`, `enterLoginEmailAndPassword(email, password)`, `clickLogin()`, `isLoginErrorVisible()`, `getLoginErrorText()` |
 | `RegisterPage` | `isEnterAccountInfoVisible()`, `getEnterAccountInfoText()`, `getPrefilledName()`, `getPrefilledEmail()`, `fillAccountDetails(...)`, `selectNewsletter()`, `selectSpecialOffers()`, `fillAddressDetails(...)`, `clickCreateAccount()` |
 | `AccountCreatedPage` | `isAccountCreatedVisible()`, `getAccountCreatedText()`, `clickContinue()` |
 | `AccountDeletedPage` | `isAccountDeletedVisible()`, `getAccountDeletedText()`, `clickContinue()` |
+| `ContactUsPage` | `isGetInTouchVisible()`, `getGetInTouchText()`, `fillContactDetails(name, email, subject, message, filePath)`, `clickSubmit()`, `isSuccessMessageVisible()`, `getSuccessMessageText()`, `clickHome()` |
+| `TestCasesPage` | `isTestCasesPageVisible()`, `getTitleText()` |
+| `ProductsPage` | `isAllProductsPageVisible()`, `getAllProductsTitleText()`, `isProductsListVisible()`, `clickViewProductFirst()`, `getFirstProductDetailUrl()`, `searchProduct(productName)`, `isSearchedProductsVisible()`, `getSearchedProductsTitleText()`, `areSearchedProductsVisible()`, `isAnySearchedProductNameContaining(keyword)`, `getProductNameByIndex(index)`, `getProductPriceByIndex(index)`, `hoverOverProductAndAddToCart(index)`, `clickContinueShopping()`, `clickViewCart()` |
+| `ProductDetailPage` | `isProductDetailVisible()`, `getProductName()`, `isCategoryVisible()`, `getCategory()`, `isPriceVisible()`, `getPrice()`, `isAvailabilityVisible()`, `getAvailability()`, `isConditionVisible()`, `getCondition()`, `isBrandVisible()`, `getBrand()` |
+| `CartPage` | `isShoppingCartPageVisible()`, `getCartProductName(index)`, `getCartProductPrice(index)`, `getCartProductQuantity(index)`, `getCartProductTotalPrice(index)`, `isSubscriptionVisible()`, `getSubscriptionText()`, `subscribeEmail(email)`, `isSubscribeSuccessMessageVisible()`, `getSubscribeSuccessMessageText()` |
 
 ### Existing API Utilities
 
@@ -482,6 +487,13 @@ The command produces a structured report with:
 | `LoginTest` | `testLoginUserWithCorrectCredentials` | TC0002 | Login with valid credentials → verify → delete account |
 | `LoginTest` | `testLoginUserWithIncorrectCredentials` | TC0003 | Verify error message with wrong credentials |
 | `LoginTest` | `testLogoutUser` | TC0004 | Login → logout → verify redirect to login page |
+| `ContactUsTest` | `testContactUs` | TC0006 | Fill contact form, handle JS alert and verify success message |
+| `TestCasesTest` | `testVerifyTestCasesPage` | TC0007 | Navigate to Test Cases page and verify title |
+| `ProductsTest` | `testVerifyAllProductsAndProductDetail` | TC0008 | Verify products list and first product details page |
+| `ProductsTest` | `testSearchProduct` | TC0009 | Search for a product keyword and verify search results |
+| `SubscriptionTest` | `testVerifySubscriptionHomePage` | TC0010 | Verify subscription email submission on home page footer |
+| `SubscriptionTest` | `testVerifySubscriptionCartPage` | TC0011 | Verify subscription email submission on cart page footer |
+| `CartTest` | `testAddProductsInCart` | TC0012 | Add multiple products to cart and verify their name, price, quantity and total price |
 
 ---
 

@@ -19,6 +19,7 @@
             <class name="com.nhims.scripts.TestCasesTest"/>
             <class name="com.nhims.scripts.ProductsTest"/>
             <class name="com.nhims.scripts.SubscriptionTest"/>
+            <class name="com.nhims.scripts.CartTest"/>
         </classes>
     </test>
 

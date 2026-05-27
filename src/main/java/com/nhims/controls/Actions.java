@@ -137,6 +137,16 @@ public class Actions {
 	}
 
 	/**
+	 * Performs a mouse hover (moveToElement) on the element.
+	 */
+	public void hover() {
+		withRetry(() -> {
+			useAction().moveToElement(element).perform();
+			Logger.info("> E > Hover");
+		});
+	}
+
+	/**
 	 * Types the given text into the element after clearing existing text.
 	 *
 	 * @param text the text to input

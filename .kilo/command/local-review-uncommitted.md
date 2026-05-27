@@ -128,6 +128,13 @@ Also read the full files when needed — diffs alone can be misleading since sur
 
 - [ ] **B12. Test method naming**: Does the method name follow `test{Verb}{Noun}` convention? (e.g. `testRegisterUser`, `testLoginWithValidCredentials`)
 
+- [ ] **B13. Test constants**: Are magic numbers and repeated string literals extracted as `private static final` constants at the top of the test class?
+  - ✅ `private static final int FIRST_PRODUCT_INDEX = 1;`
+  - ✅ `private static final String DEFAULT_QUANTITY = "1";`
+  - ❌ Using raw literals inline: `ProductsPage.hoverOverProductAndAddToCart(1)`, `Assert.assertEquals(quantity, "1")`
+
+- [ ] **B14. Text comparison style**: Do text content comparisons use `Assert.assertEquals(actual.toLowerCase(), expected.toLowerCase(), "message")` instead of `Assert.assertTrue(actual.equals(expected))`? The `assertEquals` produces better failure diagnostics.
+
 ### C. Page Object Checks
 
 - [ ] **C1. Base class**: Does the page class extend `BasePage`?
@@ -147,11 +154,21 @@ Also read the full files when needed — diffs alone can be misleading since sur
 
 - [ ] **C8. Get-text guard**: Do get-text methods guard with `isVisible()` check and return `""` if not visible?
 
-- [ ] **C9. Element interaction**: Is the interaction chain correct? `control.get().action()` where action is one of: `click()`, `type(text)`, `clear()`, `check()`, `unCheck()`, `selectOptionByText(text)`, `getText()`, `getValue()`, `getAttr(attr)`, `selectFile(path)`
+- [ ] **C9. Element interaction**: Is the interaction chain correct? `control.get().action()` where action is one of: `click()`, `type(text)`, `clear()`, `check()`, `unCheck()`, `selectOptionByText(text)`, `getText()`, `getValue()`, `getAttr(attr)`, `selectFile(path)`, `hover()`
 
 - [ ] **C10. No raw Selenium**: Does the code avoid direct Selenium WebDriver calls? All interactions go through `Control` → `Actions`.
 
 - [ ] **C11. Reusable components**: If a UI pattern is shared (e.g. title + continue button), does it use `NotificationComponent` instead of duplicating controls?
+
+- [ ] **C12. Dynamic locator pattern**: When locators contain variable parts (index, keyword), are they declared as `private static final Control` fields with `%s`/`%d` placeholders and parameterized via `setDynamicLocator(args)`?
+  - ✅ Field declaration: `private static final Control lblProductNameByIndex = new Control("(//div...) [%d]//p");`
+  - ✅ Usage: `Control target = lblProductNameByIndex.setDynamicLocator(index);`
+  - ❌ Inline creation: `Control productName = new Control(String.format("(//div...)[%d]//p", index));`
+  - ❌ String concatenation: `new Control("//p[contains(., '" + keyword + "')]")`
+
+- [ ] **C13. Hover action**: When hovering over an element, does the code use the explicit `hover()` action instead of relying on the implicit `get()` side effect?
+  - ✅ `productCard.get().hover()` — explicit, readable intent
+  - ❌ `productCard.get()` — implicit hover via `find()→focus()→moveToElement()` side effect, discard return value
 
 ### D. Data Model Checks
 

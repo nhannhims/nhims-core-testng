@@ -15,6 +15,18 @@ public class ProductsPage extends BasePage {
 	private static final Control btnSearchProduct = new Control("#submit_search");
 	private static final Control lblSearchedProductsTitle = new Control("//div[@class='features_items']//h2[contains(text(),'Searched Products')]");
 	private static final Control lblSearchedProductsList = new Control("//div[@class='features_items']//div[@class='product-image-wrapper']");
+	private static final Control btnContinueShopping = new Control("button.close-modal");
+	private static final Control lnkViewCartModal = new Control("#cartModal a[href='/view_cart']");
+	private static final Control lblProductNameWithKeyword = new Control(
+			"//div[@class='features_items']//div[@class='productinfo text-center']//p[contains(.,'%s')]");
+	private static final Control lblProductNameByIndex = new Control(
+			"(//div[@class='features_items']//div[@class='product-image-wrapper'])[%d]//div[@class='productinfo text-center']/p");
+	private static final Control lblProductPriceByIndex = new Control(
+			"(//div[@class='features_items']//div[@class='product-image-wrapper'])[%d]//div[@class='productinfo text-center']/h2");
+	private static final Control productCardByIndex = new Control(
+			"(//div[@class='features_items']//div[@class='product-image-wrapper'])[%d]");
+	private static final Control btnAddToCartByIndex = new Control(
+			"(//div[@class='features_items']//div[@class='product-image-wrapper'])[%d]//div[@class='product-overlay']//a[contains(@class,'add-to-cart')]");
 
 	/**
 	 * Checks if the ALL PRODUCTS page is visible by verifying the title element.
@@ -133,8 +145,69 @@ public class ProductsPage extends BasePage {
 	@Step("Check if any searched product name contains: {0}")
 	public static boolean isAnySearchedProductNameContaining(String keyword) {
 		Logger.info("Check if any searched product name contains: " + keyword);
-		Control productNameWithKeyword = new Control(
-				"//div[@class='features_items']//div[@class='productinfo text-center']//p[contains(.,'" + keyword + "')]");
-		return productNameWithKeyword.isVisible();
+		Control target = lblProductNameWithKeyword.setDynamicLocator(keyword);
+		return target.isVisible();
+	}
+
+	/**
+	 * Gets the product name by index from the products list.
+	 *
+	 * @param index the 1-based index of the product
+	 * @return the product name, or empty string if not visible
+	 */
+	@Step("Get product name at index {0}")
+	public static String getProductNameByIndex(int index) {
+		Logger.info("Get product name at index " + index);
+		Control target = lblProductNameByIndex.setDynamicLocator(index);
+		if (target.isVisible()) {
+			return target.get().getText();
+		}
+		return "";
+	}
+
+	/**
+	 * Gets the product price by index from the products list.
+	 *
+	 * @param index the 1-based index of the product
+	 * @return the product price text, or empty string if not visible
+	 */
+	@Step("Get product price at index {0}")
+	public static String getProductPriceByIndex(int index) {
+		Logger.info("Get product price at index " + index);
+		Control target = lblProductPriceByIndex.setDynamicLocator(index);
+		if (target.isVisible()) {
+			return target.get().getText();
+		}
+		return "";
+	}
+
+	/**
+	 * Hovers over the product card at the given index and clicks 'Add to cart'.
+	 *
+	 * @param index the 1-based index of the product
+	 */
+	@Step("Hover over product {0} and click 'Add to cart'")
+	public static void hoverOverProductAndAddToCart(int index) {
+		Logger.info("Hover over product " + index + " and click 'Add to cart'");
+		productCardByIndex.setDynamicLocator(index).get().hover();
+		btnAddToCartByIndex.setDynamicLocator(index).get().click();
+	}
+
+	/**
+	 * Clicks 'Continue Shopping' button in the add-to-cart confirmation modal.
+	 */
+	@Step("Click 'Continue Shopping' button")
+	public static void clickContinueShopping() {
+		Logger.info("Click 'Continue Shopping' button");
+		btnContinueShopping.get().click();
+	}
+
+	/**
+	 * Clicks 'View Cart' link in the add-to-cart confirmation modal.
+	 */
+	@Step("Click 'View Cart' link")
+	public static void clickViewCart() {
+		Logger.info("Click 'View Cart' link");
+		lnkViewCartModal.get().click();
 	}
 }

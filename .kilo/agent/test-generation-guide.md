@@ -200,9 +200,25 @@ public class FeatureTest {
     }
     ```
 
----
+11. **Test constants**: Extract magic numbers and repeated string literals as `private static final` constants at the top of the test class. Use descriptive UPPER_SNAKE_CASE names like `FIRST_PRODUCT_INDEX`, `DEFAULT_QUANTITY`.
+    ```java
+    private static final int FIRST_PRODUCT_INDEX = 1;
+    private static final int SECOND_PRODUCT_INDEX = 2;
+    private static final String DEFAULT_QUANTITY = "1";
+    ```
 
-## 5. Page Object Template
+12. **Text assertion style**: Use `Assert.assertEquals(actual.toLowerCase(), expected.toLowerCase(), "message")` for text content comparisons. The `assertEquals` produces better failure diagnostics showing both actual and expected values. Do NOT use `Assert.assertTrue(actual.equals(expected))`.
+    ```java
+    // ✅ CORRECT
+    Assert.assertEquals(cartProduct1Price.toLowerCase(), firstProductPrice.toLowerCase(),
+            "First product price in cart does not match!");
+
+    // ❌ WRONG
+    Assert.assertTrue(cartProduct1Price.equals(firstProductPrice),
+            "First product price in cart does not match!");
+    ```
+
+---
 
 ```java
 package com.nhims.pages;
@@ -265,6 +281,30 @@ public class XxxPage extends BasePage {
 8. **Locator auto-detection**: If locator starts with `/` or `(`, it's XPath; otherwise CSS selector
 9. **Never use raw Selenium** — always go through `Control` → `Actions`
 10. **Reusable UI blocks** (title + continue pattern shared by result pages): delegate to `NotificationComponent` instead of duplicating controls
+11. **Dynamic locators**: When locators contain variable parts (index, keyword), declare them as `private static final Control` fields with `%s`/`%d` placeholders at the top of the class, then use `setDynamicLocator(args)` to parameterize at runtime. Do NOT create `new Control(String.format(...))` inline — this keeps all locators visible at the top of the class and leverages the framework's dynamic locator support.
+    ```java
+    // ✅ CORRECT — field with placeholder + setDynamicLocator
+    private static final Control lblProductNameByIndex = new Control(
+            "(//div[@class='features_items']//div[@class='product-image-wrapper'])[%d]//div[@class='productinfo text-center']/p");
+    
+    public static String getProductNameByIndex(int index) {
+        Control target = lblProductNameByIndex.setDynamicLocator(index);
+        if (target.isVisible()) {
+            return target.get().getText();
+        }
+        return "";
+    }
+    
+    // ❌ WRONG — inline new Control with String.format
+    public static String getProductNameByIndex(int index) {
+        Control productName = new Control(
+                String.format("(//div[@class='features_items']//div[@class='product-image-wrapper'])[%d]//div[@class='productinfo text-center']/p", index));
+        if (productName.isVisible()) {
+            return productName.get().getText();
+        }
+        return "";
+    }
+    ```
 
 ### 5.2 Available Actions on Control Elements
 
@@ -282,6 +322,7 @@ public class XxxPage extends BasePage {
 | `selectFile(path)` | `el.get().selectFile("path")` | File upload |
 | `rightClick()` | `el.get().rightClick()` | Right-click |
 | `doubleClick()` | `el.get().doubleClick()` | Double-click |
+| `hover()` | `el.get().hover()` | Hovers mouse over element (moveToElement) |
 | `then()` | `txt.get().clear().then().enter()` | Chain keyboard events |
 | `isVisible()` | `lbl.isVisible()` | Check visibility (boolean, no exception) |
 | `isDisplay()` | `lbl.isDisplay()` | Check if element exists in DOM |
@@ -581,6 +622,11 @@ https://automationexercise.com/api
 | `RegisterPage` | `isEnterAccountInfoVisible()`, `getEnterAccountInfoText()`, `getPrefilledName()`, `getPrefilledEmail()`, `fillAccountDetails(title, password, day, month, year)`, `selectNewsletter()`, `selectSpecialOffers()`, `fillAddressDetails(firstName, lastName, company, address1, address2, country, state, city, zipcode, mobileNumber)`, `clickCreateAccount()` |
 | `AccountCreatedPage` | `isAccountCreatedVisible()`, `getAccountCreatedText()`, `clickContinue()` |
 | `AccountDeletedPage` | `isAccountDeletedVisible()`, `getAccountDeletedText()`, `clickContinue()` |
+| `ContactUsPage` | `isGetInTouchVisible()`, `getGetInTouchText()`, `fillContactForm()`, `uploadFile()`, `clickSubmit()`, `acceptAlert()`, `isSuccessMessageVisible()`, `getSuccessMessageText()`, `clickHome()` |
+| `TestCasesPage` | `isTestCasesPageVisible()`, `getTitleText()` |
+| `ProductsPage` | `isAllProductsPageVisible()`, `getAllProductsTitleText()`, `isProductsListVisible()`, `clickViewProductFirst()`, `getFirstProductDetailUrl()`, `searchProduct()`, `isSearchedProductsVisible()`, `getSearchedProductsTitleText()`, `areSearchedProductsVisible()`, `isAnySearchedProductNameContaining()`, `getProductNameByIndex()`, `getProductPriceByIndex()`, `hoverOverProductAndAddToCart()`, `clickContinueShopping()`, `clickViewCart()` |
+| `ProductDetailPage` | `isProductDetailVisible()`, `getProductName()`, `is/getCategory()`, `is/getPrice()`, `is/getAvailability()`, `is/getCondition()`, `is/getBrand()` |
+| `CartPage` | `isSubscriptionVisible()`, `getSubscriptionText()`, `subscribeEmail()`, `isSubscribeSuccessMessageVisible()`, `getSubscribeSuccessMessageText()`, `isShoppingCartPageVisible()`, `getCartProductName()`, `getCartProductPrice()`, `getCartProductQuantity()`, `getCartProductTotalPrice()` |
 
 When generating test scripts, reuse these existing page methods. Only create new page objects when navigating to pages not yet covered.
 
@@ -604,4 +650,7 @@ When generating test scripts, reuse these existing page methods. Only create new
 - [ ] All new config keys added to both `configs.properties`, environment `.properties` files, and `Configs` enum
 - [ ] `toFormUrlEncoded()` used when sending data model as API request body
 - [ ] Reusable UI patterns (notification title + continue) use `NotificationComponent`
+- [ ] Dynamic locators use `private static final Control` fields with `%s`/`%d` placeholders + `setDynamicLocator()` — NOT inline `new Control(String.format(...))`
+- [ ] Test class magic numbers extracted as `private static final` constants (e.g. `FIRST_PRODUCT_INDEX`, `DEFAULT_QUANTITY`)
+- [ ] Text comparisons use `Assert.assertEquals(actual.toLowerCase(), expected.toLowerCase())` — NOT `Assert.assertTrue(actual.equals(expected))`
 - [ ] Javadoc on all classes and public methods

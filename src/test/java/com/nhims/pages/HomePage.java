@@ -16,6 +16,10 @@ public class HomePage extends BasePage {
 	private static final Control lblLoggedInAs = new Control("//a[contains(., 'Logged in as')]");
 	private static final Control btnTestCases = new Control("a[href='/test_cases']");
 	private static final Control btnProducts = new Control("a[href='/products']");
+	private static final Control lblSubscription = new Control("div.single-widget:has(#susbscribe_email) h2");
+	private static final Control txtSubscriptionEmail = new Control("#susbscribe_email");
+	private static final Control btnSubscribe = new Control("#subscribe");
+	private static final Control lblSubscribeSuccess = new Control("#success-subscribe");
 
 	/**
 	 * Checks if the Home Page is visible by verifying the logo element.
@@ -94,5 +98,67 @@ public class HomePage extends BasePage {
 	public static void clickProducts() {
 		Logger.info("Click on 'Products' button");
 		btnProducts.get().click();
+	}
+
+	/**
+	 * Checks if the 'SUBSCRIPTION' heading is visible in the footer.
+	 *
+	 * @return true if the subscription heading is visible, false otherwise
+	 */
+	@Step("Check if 'SUBSCRIPTION' heading is visible")
+	public static boolean isSubscriptionVisible() {
+		Logger.info("Check if 'SUBSCRIPTION' heading is visible");
+		return lblSubscription.isVisible();
+	}
+
+	/**
+	 * Gets the text of the 'SUBSCRIPTION' heading in the footer.
+	 *
+	 * @return the subscription heading text, or empty string if not visible
+	 */
+	@Step("Get the text of 'SUBSCRIPTION' heading")
+	public static String getSubscriptionText() {
+		Logger.info("Get 'SUBSCRIPTION' heading text");
+		if (lblSubscription.isVisible()) {
+			return lblSubscription.get().getText();
+		}
+		return "";
+	}
+
+	/**
+	 * Enters an email address and clicks the subscribe arrow button.
+	 *
+	 * @param email the email address to subscribe with
+	 */
+	@Step("Subscribe with email: {email}")
+	public static void subscribeEmail(String email) {
+		Logger.info("Enter email and click subscribe button");
+		txtSubscriptionEmail.get().type(email);
+		btnSubscribe.get().click();
+	}
+
+	/**
+	 * Checks if the subscription success message is visible.
+	 *
+	 * @return true if the success message is visible, false otherwise
+	 */
+	@Step("Check if subscription success message is visible")
+	public static boolean isSubscribeSuccessMessageVisible() {
+		Logger.info("Check if subscription success message is visible");
+		return lblSubscribeSuccess.isVisible();
+	}
+
+	/**
+	 * Gets the text of the subscription success message.
+	 *
+	 * @return the success message text, or empty string if not visible
+	 */
+	@Step("Get the subscription success message text")
+	public static String getSubscribeSuccessMessageText() {
+		Logger.info("Get subscription success message text");
+		if (lblSubscribeSuccess.isVisible()) {
+			return lblSubscribeSuccess.get().getText();
+		}
+		return "";
 	}
 }

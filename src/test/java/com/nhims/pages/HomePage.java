@@ -18,6 +18,8 @@ public class HomePage extends BasePage {
 	private static final Control btnTestCases = new Control("a[href='/test_cases']");
 	private static final Control btnProducts = new Control("a[href='/products']");
 	private static final Control btnCart = new Control("a[href='/view_cart']");
+	private static final Control lnkViewProductFirst = new Control(
+			"//div[@class='features_items']//div[@class='choose']//a[contains(text(),'View Product')][1]");
 	private static final SubscriptionComponent subscription = new SubscriptionComponent(
 			"div.single-widget:has(#susbscribe_email) h2",
 			"#susbscribe_email",
@@ -110,6 +112,29 @@ public class HomePage extends BasePage {
 	public static void clickCart() {
 		Logger.info("Click on 'Cart' button");
 		btnCart.get().click();
+	}
+
+	/**
+	 * Clicks 'View Product' link of the first product on the home page.
+	 */
+	@Step("Click 'View Product' for first product")
+	public static void clickViewProductOnHomePage() {
+		Logger.info("Click 'View Product' for first product");
+		lnkViewProductFirst.get().click();
+	}
+
+	/**
+	 * Gets the href attribute of the first product's 'View Product' link.
+	 *
+	 * @return the product detail URL, or empty string if not visible
+	 */
+	@Step("Get 'View Product' href of first product")
+	public static String getFirstProductDetailUrl() {
+		Logger.info("Get 'View Product' href of first product");
+		if (lnkViewProductFirst.isVisible()) {
+			return lnkViewProductFirst.get().getAttr("href");
+		}
+		return "";
 	}
 
 	/**

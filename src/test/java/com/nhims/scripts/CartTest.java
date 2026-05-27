@@ -9,6 +9,7 @@ import com.nhims.constants.Configs.EnvironmentConfig;
 import com.nhims.listeners.TestListener;
 import com.nhims.pages.CartPage;
 import com.nhims.pages.HomePage;
+import com.nhims.pages.ProductDetailPage;
 import com.nhims.pages.ProductsPage;
 import com.nhims.utils.HFile;
 import com.nhims.utils.Logger;
@@ -28,6 +29,7 @@ public class CartTest {
 	private static final int FIRST_PRODUCT_INDEX = 1;
 	private static final int SECOND_PRODUCT_INDEX = 2;
 	private static final String DEFAULT_QUANTITY = "1";
+	private static final String TARGET_QUANTITY = "4";
 
 	/**
 	 * TC0012: Add Products in Cart.
@@ -130,5 +132,73 @@ public class CartTest {
 		String cartProduct2Total = CartPage.getCartProductTotalPrice(SECOND_PRODUCT_INDEX);
 		Assert.assertEquals(cartProduct2Total.toLowerCase(), secondProductPrice.toLowerCase(),
 				"Second product total price should equal unit price!");
+	}
+
+	/**
+	 * TC0013: Verify Product quantity in Cart.
+	 * Navigates to the home page, clicks 'View Product' for a recommended product,
+	 * increases quantity to 4, adds to cart, and verifies the product is displayed
+	 * in the cart page with the exact quantity.
+	 */
+	@Test(testName = "TC0013", description = "Test Case 13: Verify Product quantity in Cart")
+	@Description("Verify that user can change product quantity on product detail page and the correct quantity is shown in cart")
+	@Severity(SeverityLevel.CRITICAL)
+	public void testVerifyProductQuantityInCart() {
+		Logger.info("1. Navigate to url");
+		Navigation.visitTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
+
+		// Bypass potential Google vignette ad redirect
+		String currentUrl = Navigation.getCurrentUrl();
+		if (currentUrl.contains("google_vignette") || currentUrl.contains("#google_vignette")) {
+			Logger.info("Bypassing Google vignette ad by navigating to the home page");
+			Navigation.navigateTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl));
+		}
+
+		Logger.info("2. Verify that home page is visible successfully");
+		Assert.assertTrue(HomePage.isHomePageVisible(), "Home page is not visible!");
+
+		Logger.info("3. Click 'View Product' for any product on home page");
+		String productDetailUrl = HomePage.getFirstProductDetailUrl();
+		HomePage.clickViewProductOnHomePage();
+
+		// Bypass potential Google vignette ad redirect
+		currentUrl = Navigation.getCurrentUrl();
+		if (currentUrl.contains("google_vignette") || currentUrl.contains("#google_vignette")) {
+			Logger.info("Bypassing Google vignette ad by navigating to product details page");
+			Navigation.navigateTo(productDetailUrl);
+		}
+
+		Logger.info("4. Verify product detail is opened");
+		Assert.assertTrue(ProductDetailPage.isProductDetailVisible(), "Product detail page is not visible!");
+
+		// Capture product name before adding to cart
+		String productName = ProductDetailPage.getProductName();
+
+		Logger.info("5. Increase quantity to 4");
+		ProductDetailPage.setQuantity(TARGET_QUANTITY);
+
+		Logger.info("6. Click 'Add to cart' button");
+		ProductDetailPage.clickAddToCart();
+
+		Logger.info("7. Click 'View Cart' button");
+		ProductDetailPage.clickViewCart();
+
+		// Bypass potential Google vignette ad redirect
+		currentUrl = Navigation.getCurrentUrl();
+		if (currentUrl.contains("google_vignette") || currentUrl.contains("#google_vignette")) {
+			Logger.info("Bypassing Google vignette ad by navigating to cart page");
+			Navigation.navigateTo(HFile.getConfigEnvironment(EnvironmentConfig.applicationUrl) + "/view_cart");
+		}
+
+		Logger.info("8. Verify that product is displayed in cart page with exact quantity");
+		Assert.assertTrue(CartPage.isShoppingCartPageVisible(), "Shopping cart page is not visible!");
+
+		String cartProductName = CartPage.getCartProductName(FIRST_PRODUCT_INDEX);
+		Assert.assertEquals(cartProductName.toLowerCase(), productName.toLowerCase(),
+				"Product name in cart does not match!");
+
+		String cartProductQuantity = CartPage.getCartProductQuantity(FIRST_PRODUCT_INDEX);
+		Assert.assertEquals(cartProductQuantity, TARGET_QUANTITY,
+				"Product quantity in cart should be " + TARGET_QUANTITY + "!");
 	}
 }

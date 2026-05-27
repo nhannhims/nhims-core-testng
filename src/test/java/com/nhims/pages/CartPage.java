@@ -23,6 +23,8 @@ public class CartPage extends BasePage {
 			"(//table[@id='cart_info_table']//tbody/tr)[%d]/td[@class='cart_quantity']/button");
 	private static final Control lblCartProductTotal = new Control(
 			"(//table[@id='cart_info_table']//tbody/tr)[%d]/td[@class='cart_total']//p");
+	private static final Control btnProceedToCheckout = new Control("a.check_out");
+	private static final Control lnkRegisterLoginModal = new Control("//u[contains(text(),'Register / Login')]/parent::a");
 
 	/**
 	 * Checks if the subscription heading is visible in the footer.
@@ -152,5 +154,23 @@ public class CartPage extends BasePage {
 			return productTotal.get().getText();
 		}
 		return "";
+	}
+
+	/**
+	 * Clicks 'Proceed To Checkout' button on the cart page.
+	 */
+	@Step("Click 'Proceed To Checkout' button")
+	public static void clickProceedToCheckout() {
+		Logger.info("Click 'Proceed To Checkout' button");
+		btnProceedToCheckout.get().click();
+	}
+
+	/**
+	 * Clicks 'Register / Login' link in the checkout modal.
+	 */
+	@Step("Click 'Register / Login' link in checkout modal")
+	public static void clickRegisterLoginOnModal() {
+		Logger.info("Click 'Register / Login' link in checkout modal");
+		lnkRegisterLoginModal.get().click();
 	}
 }

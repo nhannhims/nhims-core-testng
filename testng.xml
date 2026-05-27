@@ -21,6 +21,7 @@
             <class name="com.nhims.scripts.ProductsTest"/>
             <class name="com.nhims.scripts.SubscriptionTest"/>
             <class name="com.nhims.scripts.CartTest"/>
+            <class name="com.nhims.scripts.PlaceOrderTest"/>
         </classes>
     </test>
 

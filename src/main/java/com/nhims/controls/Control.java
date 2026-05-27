@@ -131,12 +131,16 @@ public class Control extends BaseControl {
 	 * @param el the element to focus
 	 */
 	private void focus(WebElement el) {
-		useAction().moveToElement(el).perform();
-		if (!isFocus(el)) {
-			useAction().scrollToElement(el).perform();
+		try {
+			useAction().moveToElement(el).perform();
 			if (!isFocus(el)) {
-				((JavascriptExecutor) Browsers.browser()).executeScript(JavaScript.SCROLL_TO_ELEMENT, el);
+				useAction().scrollToElement(el).perform();
+				if (!isFocus(el)) {
+					((JavascriptExecutor) Browsers.browser()).executeScript(JavaScript.SCROLL_TO_ELEMENT, el);
+				}
 			}
+		} catch (Exception e) {
+			Logger.warning("Unable to focus element: " + e.getMessage());
 		}
 	}
 

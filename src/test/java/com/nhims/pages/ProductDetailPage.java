@@ -14,6 +14,9 @@ public class ProductDetailPage extends BasePage {
 	private static final Control lblAvailability = new Control("//div[@class='product-information']//p[b[contains(text(),'Availability')]]");
 	private static final Control lblCondition = new Control("//div[@class='product-information']//p[b[contains(text(),'Condition')]]");
 	private static final Control lblBrand = new Control("//div[@class='product-information']//p[b[contains(text(),'Brand')]]");
+	private static final Control txtQuantity = new Control("#quantity");
+	private static final Control btnAddToCart = new Control("button.cart");
+	private static final Control lnkViewCartModal = new Control("#cartModal a[href='/view_cart']");
 
 	/**
 	 * Checks if the product detail page is visible by verifying the product name element.
@@ -163,5 +166,35 @@ public class ProductDetailPage extends BasePage {
 			return lblBrand.get().getText();
 		}
 		return "";
+	}
+
+	/**
+	 * Sets the product quantity to the specified value.
+	 *
+	 * @param quantity the quantity to set
+	 */
+	@Step("Set product quantity to {0}")
+	public static void setQuantity(String quantity) {
+		Logger.info("Set product quantity to " + quantity);
+		txtQuantity.get().clear();
+		txtQuantity.get().type(quantity);
+	}
+
+	/**
+	 * Clicks the 'Add to cart' button on the product detail page.
+	 */
+	@Step("Click 'Add to cart' button")
+	public static void clickAddToCart() {
+		Logger.info("Click 'Add to cart' button");
+		btnAddToCart.get().click();
+	}
+
+	/**
+	 * Clicks the 'View Cart' link in the add-to-cart confirmation modal.
+	 */
+	@Step("Click 'View Cart' link")
+	public static void clickViewCart() {
+		Logger.info("Click 'View Cart' link");
+		lnkViewCartModal.get().click();
 	}
 }
